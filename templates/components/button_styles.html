@@ -1,0 +1,269 @@
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SISTEMA UNIFICADO DE ESTILOS DE BOTONES - TradingBot Platform  -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<style>
+    /* ──────────────────────────────────────────────────────────── */
+    /* BOTONES PRINCIPALES                                          */
+    /* ──────────────────────────────────────────────────────────── */
+    
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    
+    .btn:active {
+        transform: translateY(0);
+    }
+    
+    /* Botón Primary (Gradiente Principal) */
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        box-shadow: 0 8px 25px rgba(102,126,234,0.4);
+    }
+    
+    /* Botón Success (Verde) */
+    .btn-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+    }
+    
+    .btn-success:hover {
+        box-shadow: 0 8px 25px rgba(56,239,125,0.4);
+    }
+    
+    /* Botón Danger (Rojo) */
+    .btn-danger {
+        background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        box-shadow: 0 8px 25px rgba(238,9,121,0.4);
+    }
+    
+    /* Botón Warning (Naranja/Amarillo) */
+    .btn-warning {
+        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+        color: #333;
+    }
+    
+    .btn-warning:hover {
+        box-shadow: 0 8px 25px rgba(247,151,30,0.4);
+    }
+    
+    /* Botón Info (Azul claro) */
+    .btn-info {
+        background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
+        color: white;
+    }
+    
+    .btn-info:hover {
+        box-shadow: 0 8px 25px rgba(33,150,243,0.4);
+    }
+    
+    /* Botón Secondary (Gris) */
+    .btn-secondary {
+        background: linear-gradient(135deg, #616161 0%, #9E9E9E 100%);
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        box-shadow: 0 8px 25px rgba(97,97,97,0.4);
+    }
+    
+    /* Botón Outline */
+    .btn-outline {
+        background: transparent;
+        border: 2px solid #667eea;
+        color: #667eea;
+        box-shadow: none;
+    }
+    
+    .btn-outline:hover {
+        background: #667eea;
+        color: white;
+    }
+    
+    /* ──────────────────────────────────────────────────────────── */
+    /* TAMAÑOS DE BOTONES                                           */
+    /* ──────────────────────────────────────────────────────────── */
+    
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .btn-lg {
+        padding: 16px 32px;
+        font-size: 17px;
+    }
+    
+    .btn-block {
+        width: 100%;
+        display: flex;
+    }
+    
+    /* ──────────────────────────────────────────────────────────── */
+    /* GRUPOS DE BOTONES                                            */
+    /* ──────────────────────────────────────────────────────────── */
+    
+    .btn-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-group-vertical {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn-group-justified {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+    }
+    
+    /* ──────────────────────────────────────────────────────────── */
+    /* BOTONES ESPECIALES DE NAVEGACIÓN                             */
+    /* ──────────────────────────────────────────────────────────── */
+    
+    .nav-controls {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 10px;
+        z-index: 1000;
+    }
+    
+    .nav-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.95);
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .nav-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    
+    body.dark-mode .nav-btn {
+        background: rgba(30,30,46,0.95);
+        color: white;
+    }
+    
+    /* ──────────────────────────────────────────────────────────── */
+    /* BOTONES DE ACCIÓN (Para tablas y listas)                    */
+    /* ──────────────────────────────────────────────────────────── */
+    
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        padding: 6px 12px;
+        font-size: 14px;
+        border-radius: 6px;
+        min-width: auto;
+    }
+    
+    /* ──────────────────────────────────────────────────────────── */
+    /* ESTADOS DE BOTONES                                           */
+    /* ──────────────────────────────────────────────────────────── */
+    
+    .btn:disabled,
+    .btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+    
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+    }
+    
+    .btn-loading::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 50%;
+        left: 50%;
+        margin-left: -8px;
+        margin-top: -8px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spinner 0.6s linear infinite;
+    }
+    
+    @keyframes spinner {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* ──────────────────────────────────────────────────────────── */
+    /* RESPONSIVE                                                    */
+    /* ──────────────────────────────────────────────────────────── */
+    
+    @media (max-width: 768px) {
+        .btn {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        
+        .btn-group-justified {
+            flex-direction: column;
+        }
+        
+        .btn-group-justified .btn {
+            width: 100%;
+        }
+        
+        .nav-controls {
+            top: 10px;
+            right: 10px;
+            flex-direction: column;
+        }
+        
+        .nav-btn {
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+        }
+    }
+</style>

@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - DragLab</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 500px;
+            width: 100%;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .register-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .register-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .register-body {
+            padding: 40px 30px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #999;
+            position: relative;
+        }
+
+        .step.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .step.completed {
+            background: #4caf50;
+            color: white;
+        }
+
+        .step-line {
+            width: 50px;
+            height: 2px;
+            background: #e0e0e0;
+        }
+
+        .step-line.active {
+            background: linear-gradient(90deg, #4caf50 0%, #667eea 100%);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-container button {
+            flex: 1;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background: #fee;
+            color: #c33;
+            border-left: 4px solid #c33;
+        }
+
+        .alert-success {
+            background: #efe;
+            color: #3c3;
+            border-left: 4px solid #3c3;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-left: 4px solid #1976d2;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .verification-code {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .verification-code input {
+            width: 60px;
+            height: 70px;
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .verification-code input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .resend-code {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .resend-code a {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .resend-code a:hover {
+            text-decoration: underline;
+        }
+
+        .password-strength {
+            height: 5px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+        }
+
+        .strength-weak { background: #f44336; width: 33%; }
+        .strength-medium { background: #ff9800; width: 66%; }
+        .strength-strong { background: #4caf50; width: 100%; }
+        
+        /* Botón de Retroceder */
+        .btn-back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102,126,234,0.1);
+            border: 2px solid rgba(102,126,234,0.2);
+            color: #667eea;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        .btn-back:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.3);
+            background: rgba(102,126,234,0.2);
+        }
+        
+        /* Menú Desplegable */
+        .nav-menu-wrapper {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .menu-toggle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102,126,234,0.1);
+            border: 2px solid rgba(102,126,234,0.2);
+            color: #667eea;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .menu-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.3);
+            background: rgba(102,126,234,0.2);
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background: white;
+            min-width: 200px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .dropdown-menu.active {
+            display: block;
+        }
+        
+        .dropdown-menu a,
+        .dropdown-menu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            text-decoration: none;
+            color: #333;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-menu a:hover,
+        .dropdown-menu button:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Google Sign-In Button */
+        .google-btn {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .google-btn:hover {
+            border-color: #4285f4;
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
+        }
+        
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 25px 0;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .divider span {
+            padding: 0 15px;
+        }
+
+        /* Loader */
+        .loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loader-overlay.active {
+            display: flex;
+        }
+
+        .loader-content {
+            background: white;
+            padding: 40px 50px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeInScale 0.3s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .loader-subtext {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Night mode styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%) !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .register-container {
+            background: #232526 !important;
+            color: #e0e0e0 !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important;
+        }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+            background: #333 !important;
+            color: #e0e0e0 !important;
+            border-color: #444 !important;
+        }
+        body.dark-mode .btn-primary {
+            background: linear-gradient(135deg, #232526 0%, #667eea 100%) !important;
+            color: #fff !important;
+        }
+        body.dark-mode .btn-secondary {
+            background: #333 !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .alert {
+            background: #333 !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .dropdown-menu {
+            background: #232526 !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .dropdown-menu a, body.dark-mode .dropdown-menu button {
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .dropdown-menu a:hover, body.dark-mode .dropdown-menu button:hover {
+            background: #333 !important;
+        }
+        body.dark-mode .google-btn {
+            background: #232526 !important;
+            color: #e0e0e0 !important;
+            border-color: #444 !important;
+        }
+        body.dark-mode .google-btn:hover {
+            background: #333 !important;
+        }
+    </style>
+</head>
+<body>
+    <button class="btn-back" onclick="window.location.href='/welcome'" title="Volver">←</button>
+    
+    <!-- Menú Desplegable -->
+    <div class="nav-menu-wrapper">
+        <button class="menu-toggle" onclick="toggleMenu()" title="Menú">☰</button>
+        <div class="dropdown-menu" id="navMenu">
+            <a href="/">🏠 Home</a>
+            <a href="/welcome">👤 Welcome</a>
+            <a href="/login">🔐 Login</a>
+            <button type="button" id="toggleDarkMode" style="background:none;border:none;width:100%;text-align:left;padding:14px 18px;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:10px;">
+                🌙 Night Mode
+            </button>
+            <button type="button" id="toggleLang" style="background:none;border:none;width:100%;text-align:left;padding:14px 18px;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:10px;">
+                🌐 Change Language
+            </button>
+        </div>
+    </div>
+    
+    <!-- Loader Overlay -->
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <div class="loader-text" id="loaderText">Enviando código de verificación...</div>
+            <div class="loader-subtext" id="loaderSubtext">Por favor espera un momento</div>
+        </div>
+    </div>
+
+    <div class="register-container">
+        <div class="register-header">
+            <h1>🧩 DragLab</h1>
+            <p>Visual strategy builder, backtesting & automated trading</p>
+        </div>
+
+        <div class="register-body">
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">1</div>
+                <div class="step-line" id="line1"></div>
+                <div class="step" id="step2">2</div>
+            </div>
+
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+
+            <!-- Step 1: Registration Data -->
+            <div class="form-step active" id="formStep1">
+                <!-- Google Sign-In -->
+                <div id="googleRegisterBtnContainer">
+                    <button type="button" class="google-btn" id="googleRegisterBtn" disabled style="opacity:0.6;cursor:not-allowed;">
+                        <svg class="google-icon" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Continue with Google
+                    </button>
+                </div>
+
+                <div class="divider">
+                    <span>or register with email</span>
+                </div>
+
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required 
+                               placeholder="John Doe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required 
+                               placeholder="your@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required 
+                               placeholder="Minimum 8 characters"
+                               oninput="checkPasswordStrength(this.value)">
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="strengthBar"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required 
+                               placeholder="Repeat your password">
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="submit" class="btn btn-primary">Create Account</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Step 2: Verification -->
+            <div class="form-step" id="formStep2">
+                <div class="alert alert-info">
+                    <strong>📧 Code Sent</strong><br>
+                    We have sent a 4-digit code to your email. Check your inbox.
+                </div>
+
+                <form id="verifyForm">
+                    <div class="verification-code">
+                        <input type="text" maxlength="1" class="code-input" data-index="0" 
+                               oninput="moveToNext(this, 1)" onkeydown="moveToPrev(event, this, -1)">
+                        <input type="text" maxlength="1" class="code-input" data-index="1" 
+                               oninput="moveToNext(this, 2)" onkeydown="moveToPrev(event, this, 0)">
+                        <input type="text" maxlength="1" class="code-input" data-index="2" 
+                               oninput="moveToNext(this, 3)" onkeydown="moveToPrev(event, this, 1)">
+                        <input type="text" maxlength="1" class="code-input" data-index="3" 
+                               oninput="autoSubmitCode()" onkeydown="moveToPrev(event, this, 2)">
+                    </div>
+
+                    <div class="resend-code">
+                        Didn't receive the code? 
+                        <a onclick="resendCode()" id="resendLink">Resend code</a>
+                        <span id="resendTimer"></span>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" onclick="goToStep(1)">Back</button>
+                        <button type="submit" class="btn btn-primary">Verify</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="login-link">
+                Already have an account? <a href="/login">Log in here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle menú desplegable
+        function toggleMenu() {
+            const menu = document.getElementById('navMenu');
+            menu.classList.toggle('active');
+        }
+        
+        // Cerrar menú al hacer click fuera
+        document.addEventListener('click', function(event) {
+            const menuWrapper = document.querySelector('.nav-menu-wrapper');
+            const menu = document.getElementById('navMenu');
+            if (menuWrapper && !menuWrapper.contains(event.target)) {
+                menu.classList.remove('active');
+            }
+        });
+        
+        let userId = null;
+        let resendTimeout = null;
+
+        // Funciones del Loader
+        function showLoader(text = 'Procesando...', subtext = 'Por favor espera') {
+            const overlay = document.getElementById('loaderOverlay');
+            const loaderText = document.getElementById('loaderText');
+            const loaderSubtext = document.getElementById('loaderSubtext');
+            
+            loaderText.textContent = text;
+            loaderSubtext.textContent = subtext;
+            overlay.classList.add('active');
+        }
+
+        function hideLoader() {
+            const overlay = document.getElementById('loaderOverlay');
+            overlay.classList.remove('active');
+        }
+
+        // Mostrar alertas
+        function showAlert(message, type = 'error') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = message;
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Cambiar de paso
+        function goToStep(stepNumber) {
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById(`formStep${stepNumber}`).classList.add('active');
+
+            // Actualizar indicadores
+            for (let i = 1; i <= 2; i++) {
+                const stepEl = document.getElementById(`step${i}`);
+                const lineEl = document.getElementById(`line${i}`);
+                
+                if (i < stepNumber) {
+                    stepEl.classList.add('completed');
+                    stepEl.classList.remove('active');
+                    if (lineEl) lineEl.classList.add('active');
+                } else if (i === stepNumber) {
+                    stepEl.classList.add('active');
+                    stepEl.classList.remove('completed');
+                } else {
+                    stepEl.classList.remove('active', 'completed');
+                    if (lineEl) lineEl.classList.remove('active');
+                }
+            }
+        }
+
+        // Verificar fortaleza de contraseña
+        function checkPasswordStrength(password) {
+            const strengthBar = document.getElementById('strengthBar');
+            strengthBar.className = 'password-strength-bar';
+
+            if (password.length < 6) {
+                strengthBar.classList.add('strength-weak');
+            } else if (password.length < 10) {
+                strengthBar.classList.add('strength-medium');
+            } else {
+                strengthBar.classList.add('strength-strong');
+            }
+        }
+
+        // Registro de usuario
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validaciones
+            if (password !== confirmPassword) {
+                showAlert('Las contraseñas no coinciden');
+                return;
+            }
+
+            if (password.length < 8) {
+                showAlert('La contraseña debe tener al menos 8 caracteres');
+                return;
+            }
+
+            try {
+                // Mostrar loader
+                showLoader('Enviando código de verificación...', 'Esto puede tardar unos segundos');
+                
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                // Ocultar loader
+                hideLoader();
+
+                if (response.ok) {
+                    userId = data.user_id;
+                    
+                    if (data.needs_verification) {
+                        // Email ya registrado sin verificar
+                        showAlert(data.message, 'success');
+                        goToStep(2);
+                        startResendTimer();
+                    } else {
+                        // Nuevo registro
+                        showAlert('¡Cuenta creada! Verifica tu email.', 'success');
+                        goToStep(2);
+                        startResendTimer();
+                    }
+                } else {
+                    showAlert(data.error || 'Error al crear cuenta');
+                }
+            } catch (error) {
+                hideLoader();
+                showAlert('Error de conexión. Intenta nuevamente.');
+            }
+        });
+
+        // Verificación de código
+        document.getElementById('verifyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const code = Array.from(document.querySelectorAll('.code-input'))
+                .map(input => input.value)
+                .join('');
+
+            if (code.length !== 4) {
+                showAlert('Ingresa el código completo');
+                return;
+            }
+
+            try {
+                // Mostrar loader
+                showLoader('Verificando código...', 'Validando tu cuenta');
+                
+                const response = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: userId, code })
+                });
+
+                const data = await response.json();
+
+                // Ocultar loader
+                hideLoader();
+
+                if (response.ok) {
+                    showAlert('¡Cuenta verificada exitosamente! Redirigiendo...', 'success');
+                    localStorage.setItem('session_token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    showAlert(data.error || 'Código incorrecto');
+                    // Limpiar inputs
+                    document.querySelectorAll('.code-input').forEach(input => {
+                        input.value = '';
+                    });
+                    document.querySelector('.code-input').focus();
+                }
+            } catch (error) {
+                hideLoader();
+                showAlert('Error de conexión. Intenta nuevamente.');
+            }
+        });
+
+        // Navegación entre inputs de código
+        function moveToNext(currentInput, nextIndex) {
+            if (currentInput.value.length === 1) {
+                const inputs = document.querySelectorAll('.code-input');
+                if (nextIndex < inputs.length) {
+                    inputs[nextIndex].focus();
+                }
+            }
+        }
+
+        function moveToPrev(event, currentInput, prevIndex) {
+            if (event.key === 'Backspace' && currentInput.value === '') {
+                const inputs = document.querySelectorAll('.code-input');
+                if (prevIndex >= 0) {
+                    inputs[prevIndex].focus();
+                }
+            }
+        }
+
+        // Auto-submit al completar código
+        function autoSubmitCode() {
+            const code = Array.from(document.querySelectorAll('.code-input'))
+                .map(input => input.value)
+                .join('');
+            
+            if (code.length === 4) {
+                setTimeout(() => {
+                    document.getElementById('verifyForm').dispatchEvent(new Event('submit'));
+                }, 300);
+            }
+        }
+
+        // Reenviar código
+        async function resendCode() {
+            if (resendTimeout) return;
+
+            try {
+                // Mostrar loader
+                showLoader('Reenviando código...', 'Enviando nuevo código a tu email');
+                
+                const response = await fetch('/api/auth/resend-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: userId })
+                });
+
+                const data = await response.json();
+
+                // Ocultar loader
+                hideLoader();
+
+                if (response.ok) {
+                    showAlert('¡Código reenviado! Revisa tu email.', 'success');
+                    startResendTimer();
+                } else {
+                    showAlert(data.error || 'Error al reenviar código');
+                }
+            } catch (error) {
+                hideLoader();
+                showAlert('Error de conexión.');
+            }
+        }
+
+        // Timer para reenvío
+        function startResendTimer() {
+            let seconds = 60;
+            const resendLink = document.getElementById('resendLink');
+            const resendTimer = document.getElementById('resendTimer');
+            
+            resendLink.style.pointerEvents = 'none';
+            resendLink.style.opacity = '0.5';
+
+            resendTimeout = setInterval(() => {
+                seconds--;
+                resendTimer.textContent = `(${seconds}s)`;
+
+                if (seconds <= 0) {
+                    clearInterval(resendTimeout);
+                    resendTimeout = null;
+                    resendLink.style.pointerEvents = 'auto';
+                    resendLink.style.opacity = '1';
+                    resendTimer.textContent = '';
+                }
+            }, 1000);
+        }
+
+        // Focus en primer input al cargar
+        window.onload = function() {
+            document.getElementById('name').focus();
+        };        
+        // ======== GOOGLE SIGN-IN ========
+        
+        // Login con Google
+        function handleGoogleRegister(response) {
+            // Enviar token al backend
+            fetch('/api/auth/google', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: response.credential })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem('session_token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    showAlert('¡Registro con Google exitoso! Redirigiendo...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    showAlert(data.error || 'Error con Google Sign-In');
+                }
+            })
+            .catch(error => {
+                showAlert('Error de conexión con Google');
+                console.error('Error:', error);
+            });
+        }
+
+        // Inicializar Google Sign-In
+        document.addEventListener('DOMContentLoaded', function() {
+            const googleClientId = '{{ google_client_id }}';
+
+            if (googleClientId && googleClientId !== '') {
+                google.accounts.id.initialize({
+                    client_id: googleClientId,
+                    callback: handleGoogleRegister,
+                    auto_select: false,
+                    cancel_on_tap_outside: true
+                });
+
+                // Render the Google button
+                google.accounts.id.renderButton(
+                    document.getElementById('googleRegisterBtnContainer'),
+                    {
+                        theme: 'outline',
+                        size: 'large',
+                        width: '100%',
+                        text: 'signup_with',
+                        shape: 'rectangular',
+                        logo_alignment: 'left'
+                    }
+                );
+            } else {
+                // Si no hay client ID, el botón permanece deshabilitado y visible
+                document.getElementById('googleRegisterBtn').disabled = true;
+                document.getElementById('googleRegisterBtn').style.opacity = '0.6';
+                document.getElementById('googleRegisterBtn').style.cursor = 'not-allowed';
+            }
+        });
+
+        // Night mode functionality
+        function setDarkMode(enabled) {
+            if (enabled) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('night_mode', '1');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('night_mode', '0');
+            }
+        }
+        function toggleDarkMode() {
+            const isDark = document.body.classList.contains('dark-mode');
+            setDarkMode(!isDark);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restore night mode
+            if (localStorage.getItem('night_mode') === '1') setDarkMode(true);
+            document.getElementById('toggleDarkMode').onclick = toggleDarkMode;
+        });
+
+        // Language switch functionality
+        const translations = {
+            en: {
+                home: '🏠 Home', welcome: '👤 Welcome', login: '🔐 Login', night: '🌙 Night Mode', lang: '🌐 Change Language',
+                register: 'Register - DragLab', create: 'Create Account', email: 'Email', password: 'Password', confirm: 'Confirm Password', name: 'Full Name', repeat: 'Repeat your password', or: 'or register with email', codeSent: 'We have sent a 4-digit code to your email. Check your inbox.', resend: 'Resend code', notReceived: "Didn't receive the code?", back: 'Back', verify: 'Verify', already: 'Already have an account?', loginHere: 'Log in here', continueGoogle: 'Continue with Google',
+            },
+            es: {
+                home: '🏠 Inicio', welcome: '👤 Bienvenida', login: '🔐 Iniciar Sesión', night: '🌙 Modo Noche', lang: '🌐 Cambiar Idioma',
+                register: 'Registro - DragLab', create: 'Crear Cuenta', email: 'Correo', password: 'Contraseña', confirm: 'Confirmar Contraseña', name: 'Nombre Completo', repeat: 'Repite tu contraseña', or: 'o regístrate con email', codeSent: 'Hemos enviado un código de 4 dígitos a tu correo. Revisa tu bandeja de entrada.', resend: 'Reenviar código', notReceived: '¿No recibiste el código?', back: 'Atrás', verify: 'Verificar', already: '¿Ya tienes cuenta?', loginHere: 'Inicia sesión aquí', continueGoogle: 'Continuar con Google',
+            }
+        };
+        function setLang(lang) {
+            localStorage.setItem('lang', lang);
+            const t = translations[lang];
+            document.title = t.register;
+            document.querySelector('.register-header p').textContent = 'Visual strategy builder, backtesting & automated trading';
+            document.querySelector('label[for="name"]').textContent = t.name;
+            document.querySelector('label[for="email"]').textContent = t.email;
+            document.querySelector('label[for="password"]').textContent = t.password;
+            document.querySelector('label[for="confirmPassword"]').textContent = t.confirm;
+            document.getElementById('confirmPassword').placeholder = t.repeat;
+            document.getElementById('password').placeholder = lang === 'es' ? 'Mínimo 8 caracteres' : 'Minimum 8 characters';
+            document.getElementById('name').placeholder = lang === 'es' ? 'Juan Pérez' : 'John Doe';
+            document.getElementById('email').placeholder = lang === 'es' ? 'tu@email.com' : 'your@email.com';
+            document.querySelector('.btn-primary').textContent = t.create;
+            document.querySelector('.divider span').textContent = t.or;
+            document.querySelector('.google-btn').textContent = t.continueGoogle;
+            document.querySelector('.alert-info').innerHTML = `<strong>📧 ${t.codeSent.split('.')[0]}</strong><br>${t.codeSent}`;
+            document.querySelector('.resend-code').childNodes[0].textContent = t.notReceived + ' ';
+            document.getElementById('resendLink').textContent = t.resend;
+            document.querySelector('.btn-secondary').textContent = t.back;
+            document.querySelector('.btn-primary[type="submit"]').textContent = t.verify;
+            document.querySelector('.login-link').innerHTML = `${t.already} <a href="/login">${t.loginHere}</a>`;
+            // Menu
+            const menu = document.getElementById('navMenu');
+            menu.children[0].textContent = t.home;
+            menu.children[1].textContent = t.welcome;
+            menu.children[2].textContent = t.login;
+            document.getElementById('toggleDarkMode').textContent = t.night;
+            document.getElementById('toggleLang').textContent = t.lang;
+        }
+        function toggleLang() {
+            const lang = localStorage.getItem('lang') === 'es' ? 'en' : 'es';
+            setLang(lang);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('toggleLang').onclick = toggleLang;
+            const lang = localStorage.getItem('lang') || 'en';
+            setLang(lang);
+        });
+    </script>
+</body>
+</html>

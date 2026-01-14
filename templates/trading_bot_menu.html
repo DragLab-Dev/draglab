@@ -1,0 +1,618 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select mode - DragLab</title>
+    <style>
+        /* MENÚ UNIVERSAL INLINE */
+        .universal-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        .universal-menu .menu-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.9);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .universal-menu .menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .universal-menu-content {
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background: white;
+            min-width: 250px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .universal-menu-content.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .universal-menu-content a,
+        .universal-menu-content button {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .universal-menu-content a:hover,
+        .universal-menu-content button:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .universal-menu-content .menu-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+            margin: 5px 0;
+        }
+        body.dark-mode .universal-menu-content {
+            background: #1e1e2e;
+        }
+        body.dark-mode .universal-menu-content a,
+        body.dark-mode .universal-menu-content button {
+            color: #fff;
+        }
+        body.dark-mode .universal-menu-content .menu-divider {
+            background: rgba(255,255,255,0.1);
+        }
+        /* FIN MENÚ UNIVERSAL */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.3s;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        body.dark-mode .card {
+            background: #1e1e2e;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+
+        body.dark-mode .card:hover {
+            box-shadow: 0 25px 50px rgba(102,126,234,0.3);
+        }
+
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.1);
+        }
+
+        .card h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        body.dark-mode .card h2 {
+            color: #ffffff;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        body.dark-mode .card p {
+            color: #cccccc;
+        }
+
+        .card ul {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .card li {
+            color: #555;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95em;
+        }
+
+        body.dark-mode .card li {
+            color: #bbbbbb;
+            border-bottom-color: #2a2a3e;
+        }
+
+        .card li:before {
+            content: '✓';
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .card li:last-child {
+            border-bottom: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+        }
+
+        body.dark-mode .btn {
+            background: linear-gradient(135deg, #7b8ff0 0%, #9060c2 100%);
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #ffc107;
+            text-align: center;
+        }
+
+        body.dark-mode .info-box {
+            background: rgba(100, 100, 120, 0.2);
+        }
+
+        .info-box h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        /* Botón de Retroceder */
+        .btn-back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.9);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            z-index: 9000;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-back:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        body.dark-mode .btn-back {
+            background: rgba(123, 143, 240, 0.9);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .card {
+                padding: 30px 20px;
+            }
+
+            .universal-menu {
+                top: 10px;
+                right: 10px;
+            }
+
+            .universal-menu .menu-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .universal-menu-content {
+                min-width: 200px;
+                top: 55px;
+            }
+
+            .universal-menu-content a,
+            .universal-menu-content button {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+
+            .btn-back {
+                top: 10px;
+                left: 10px;
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+<a href="/" class="btn-back">←</a>
+<div class="universal-menu">
+    <button class="menu-btn" onclick="toggleUniversalMenu()" title="Menú">☰</button>
+    <div class="universal-menu-content" id="universalMenu">
+        <a href="/">🏠 Inicio</a>
+        <a href="/backtest">🧱 Visual Strategy Builder</a>
+        <a href="/trading-bot">🤖 Trading Bot</a>
+        <div class="menu-divider"></div>
+        <a href="/user-panel">👤 Mi Cuenta</a>
+        <a href="/subscriptions">💎 Suscripciones</a>
+        <a href="/admin/panel" id="adminMenuLink" style="display: none;">🔒 Panel Admin</a>
+        <div class="menu-divider"></div>
+        <button onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
+        <button onclick="toggleLanguage()">🌐 Idioma</button>
+        <div class="menu-divider"></div>
+        <button onclick="logout()">🚪 Cerrar Sesión</button>
+    </div>
+</div>
+<a href="/" class="btn-back">←</a>
+    <div class="container">
+        <div class="header">
+            <h1 id="main-title">🤖 DragLab - Trading Bots</h1>
+            <p id="main-subtitle">Selecciona el tipo de bot que deseas configurar y ejecutar</p>
+        </div>
+
+        <div class="info-box">
+            <h3 id="info-title">⚠️ Importante - Información Detallada</h3>
+            <p id="info-text" style="text-align: left; line-height: 1.8; margin: 15px 0;">
+                <strong>📊 Constructor Visual:</strong> Ambos bots utilizan el mismo constructor de bloques drag-and-drop que el backtest, permitiendo crear estrategias personalizadas sin programar.<br><br>
+                
+                <strong>📡 DragLab - Bot de Señales:</strong><br>
+                • <strong>Función:</strong> Solo NOTIFICA cuando se cumplen las condiciones de tu estrategia<br>
+                • <strong>Ejecución:</strong> NO realiza ninguna compra/venta automática<br>
+                • <strong>Uso:</strong> Ideal para validar estrategias, aprender y tomar decisiones manuales<br>
+                • <strong>Riesgo:</strong> BAJO - Solo recibe información, tú decides si operar<br>
+                • <strong>Integración:</strong> Telegram Bot para notificaciones instantáneas<br><br>
+                
+                <strong>⚙️ DragLab - Bot de Trading Automático:</strong><br>
+                • <strong>Función:</strong> EJECUTA operaciones reales cuando se cumplen las condiciones<br>
+                • <strong>Ejecución:</strong> Compra/vende automáticamente en Binance con dinero REAL<br>
+                • <strong>Uso:</strong> Para traders experimentados que confían en su estrategia<br>
+                • <strong>Riesgo:</strong> ALTO - Opera con capital real, puede generar pérdidas significativas<br>
+                • <strong>Gestión:</strong> Incluye Stop-Loss, Take-Profit y límites de pérdida diaria<br><br>
+                
+                <strong>⚡ Diferencia Clave:</strong> El Signal Bot es tu "asistente que te avisa", el Auto Bot es tu "trader que ejecuta por ti".
+            </p>
+        </div>
+
+        <div class="cards-container">
+            <!-- Signal Bot Card -->
+            <div class="card">
+                <span class="card-icon">📡</span>
+                <h2 id="signal-title">Bot de Señales</h2>
+                <p id="signal-subtitle">Recibe señales de trading en tiempo real sin ejecutar operaciones</p>
+                <ul>
+                    <li id="signal-feature-1">Monitoreo en tiempo real 24/7</li>
+                    <li id="signal-feature-2">Notificaciones de señales LONG/SHORT</li>
+                    <li id="signal-feature-3">Constructor visual de estrategia</li>
+                    <li id="signal-feature-4">Historial de señales generadas</li>
+                    <li id="signal-feature-5">Sin ejecución automática</li>
+                    <li id="signal-feature-6">Ideal para análisis y aprendizaje</li>
+                </ul>
+                <button class="btn" onclick="goToSignalBot()" id="signal-btn">Configurar Bot de Señales</button>
+            </div>
+
+            <!-- Auto Trading Bot Card -->
+            <div class="card">
+                <span class="card-icon">⚙️</span>
+                <h2 id="auto-title">Bot de Trading Automático</h2>
+                <p id="auto-subtitle">Ejecuta operaciones de trading automáticamente en exchange real</p>
+                <ul>
+                    <li id="auto-feature-1">Trading automático 24/7</li>
+                    <li id="auto-feature-2">Ejecución real de órdenes</li>
+                    <li id="auto-feature-3">Gestión de posiciones</li>
+                    <li id="auto-feature-4">Stop-loss y take-profit</li>
+                    <li id="auto-feature-5">Gestión de riesgo avanzada</li>
+                    <li id="auto-feature-6">⚠️ Requiere API keys del exchange</li>
+                </ul>
+                <button class="btn" onclick="goToAutoBot()" id="auto-btn">Configurar Bot de Trading Automático</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* MENÚ UNIVERSAL JAVASCRIPT */
+        function toggleUniversalMenu() {
+            const menu = document.getElementById('universalMenu');
+            if (menu) {
+                menu.classList.toggle('active');
+            }
+        }
+        
+        document.addEventListener('click', function(event) {
+            const menu = document.querySelector('.universal-menu');
+            const menuContent = document.getElementById('universalMenu');
+            if (menu && menuContent && !menu.contains(event.target)) {
+                menuContent.classList.remove('active');
+            }
+        });
+        
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                fetch('/api/auth/logout', { method: 'POST' })
+                    .then(() => window.location.href = '/login')
+                    .catch(() => window.location.href = '/login');
+            }
+        }
+        
+        // Verificar si es admin
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/auth/me')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.user && data.user.role === 'admin') {
+                        const adminLink = document.getElementById('adminMenuLink');
+                        if (adminLink) adminLink.style.display = 'block';
+                    }
+                })
+                .catch(err => console.error('Error verificando rol:', err));
+        });
+        /* FIN MENÚ UNIVERSAL */
+
+        // Traducciones
+        const translations = {
+            es: {
+                'main-title': '🤖 Trading Bot',
+                'main-subtitle': 'Selecciona el tipo de bot que deseas configurar y ejecutar',
+                'info-title': '⚠️ Importante',
+                'info-text': 'Ambos bots utilizan el mismo constructor visual de bloques que el backtest. La diferencia está en la ejecución: uno genera señales y el otro ejecuta trades automáticamente.',
+                'signal-title': 'Bot de Señales',
+                'signal-subtitle': 'Recibe señales de trading en tiempo real sin ejecutar operaciones',
+                'signal-feature-1': 'Monitoreo en tiempo real 24/7',
+                'signal-feature-2': 'Notificaciones de señales LONG/SHORT',
+                'signal-feature-3': 'Constructor visual de estrategia',
+                'signal-feature-4': 'Historial de señales generadas',
+                'signal-feature-5': 'Sin ejecución automática',
+                'signal-feature-6': 'Ideal para análisis y aprendizaje',
+                'signal-btn': 'Configurar Bot de Señales',
+                'auto-title': 'Bot de Trading Automático',
+                'auto-subtitle': 'Ejecuta operaciones de trading automáticamente en exchange real',
+                'auto-feature-1': 'Trading automático 24/7',
+                'auto-feature-2': 'Ejecución real de órdenes',
+                'auto-feature-3': 'Gestión de posiciones',
+                'auto-feature-4': 'Stop-loss y take-profit',
+                'auto-feature-5': 'Gestión de riesgo avanzada',
+                'auto-feature-6': '⚠️ Requiere API keys del exchange',
+                'auto-btn': 'Configurar Trading Automático',
+                'lang-btn': '🇬🇧 EN',
+                'home-text': 'Inicio'
+            },
+            en: {
+                'main-title': '🤖 Trading Bot',
+                'main-subtitle': 'Select the type of bot you want to configure and run',
+                'info-title': '⚠️ Important',
+                'info-text': 'Both bots use the same visual block builder as the backtest. The difference is in execution: one generates signals and the other executes trades automatically.',
+                'signal-title': 'Signal Bot',
+                'signal-subtitle': 'Receive real-time trading signals without executing trades',
+                'signal-feature-1': 'Real-time monitoring 24/7',
+                'signal-feature-2': 'LONG/SHORT signal notifications',
+                'signal-feature-3': 'Visual strategy builder',
+                'signal-feature-4': 'Generated signals history',
+                'signal-feature-5': 'No automatic execution',
+                'signal-feature-6': 'Ideal for analysis and learning',
+                'signal-btn': 'Configure Signal Bot',
+                'auto-title': 'Automatic Trading Bot',
+                'auto-subtitle': 'Execute trading operations automatically on real exchange',
+                'auto-feature-1': 'Automatic trading 24/7',
+                'auto-feature-2': 'Real order execution',
+                'auto-feature-3': 'Position management',
+                'auto-feature-4': 'Stop-loss and take-profit',
+                'auto-feature-5': 'Advanced risk management',
+                'auto-feature-6': '⚠️ Requires exchange API keys',
+                'auto-btn': 'Configure Automatic Trading',
+                'lang-btn': '🇪🇸 ES',
+                'home-text': 'Home'
+            }
+        };
+
+        // Inicializar idioma y tema
+        let currentLang = localStorage.getItem('language') || 'en';
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+
+        function applyLanguage() {
+            const trans = translations[currentLang];
+            Object.keys(trans).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = trans[key];
+                }
+            });
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            localStorage.setItem('language', currentLang);
+            applyLanguage();
+        }
+
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode', darkMode);
+            localStorage.setItem('darkMode', darkMode);
+        }
+
+        function goToSignalBot() {
+            window.location.href = '/signal-bot';
+        }
+
+        function goToAutoBot() {
+            window.location.href = '/auto-bot';
+        }
+
+        // Aplicar configuraciones guardadas al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            applyLanguage();
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+            }
+        });
+    </script>
+</body>
+</html>

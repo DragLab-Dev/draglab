@@ -1,0 +1,72 @@
+================================================================
+                                                                  
+           VISUAL STRATEGY CREATOR v2.4                    
+     Constructor Visual de Estrategias mediante Bloques          
+        Crea Bots y Backtests SIN PROGRAMAR                     
+                                                                  
+================================================================
+
+INICIO RAPIDO
+================================================================
+
+1. Instalar:
+   
+   Windows:  install.bat
+   Linux:    ./install.sh
+
+2. Configurar .env:
+   
+   copy .env.example .env
+   Editar SECRET_KEY, GMAIL_USER, GMAIL_APP_PASSWORD
+
+3. Iniciar:
+   
+   Windows:  start.bat
+   Linux:    ./start.sh
+
+4. Abrir: http://localhost:5000
+
+================================================================
+
+DOCUMENTACION
+================================================================
+
+README.md         - Documentacion completa del proyecto
+DEPLOYMENT.md     - Guia para desplegar en VPS
+
+================================================================
+
+REQUISITOS
+================================================================
+
+- Python 3.8+
+- Variables en .env configuradas (SECRET_KEY, GMAIL)
+
+================================================================
+
+CARACTERISTICAS PRINCIPALES
+================================================================
+
+✓ Constructor Visual mediante BLOQUES (SIN PROGRAMAR)
+✓ Crea estrategias arrastrando bloques tipo Drag & Drop
+✓ Backtest integrado con datos historicos de Binance
+✓ Convierte estrategias visuales en Bots automatizados
+✓ Bloques pre-configurados: Indicadores, Condiciones, Señales
+✓ Autenticacion (Email + Google OAuth)
+✓ Panel de administracion completo
+✓ Sistema de suscripciones
+✓ Graficos interactivos
+✓ Import/Export de estrategias en JSON
+
+VENTAJA DIFERENCIAL: No necesitas saber programar para crear
+estrategias profesionales y bots de trading
+
+================================================================
+
+SOPORTE
+================================================================
+
+Email: camiloeagiraldodev@gmail.com
+Documentacion: README.md
+
+================================================================

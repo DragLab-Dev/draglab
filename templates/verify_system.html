@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Verificación del Sistema de Bots</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .test-section h2 {
+            color: #333;
+            margin-top: 0;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .status-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-ok {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status-icon {
+            font-size: 1.5em;
+        }
+        .instructions {
+            background: #e7f3ff;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #2196f3;
+        }
+        .instructions ol {
+            line-height: 1.8;
+        }
+        .instructions code {
+            background: #fff;
+            padding: 2px 8px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            font-family: 'Courier New', monospace;
+        }
+        .btn-test {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px 5px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .btn-test:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        #results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Verificación del Sistema de Bots</h1>
+        
+        <div class="test-section">
+            <h2>📊 Estado del Sistema</h2>
+            <div id="system-status">
+                <p>Ejecutando verificación...</p>
+            </div>
+            <button class="btn-test" onclick="runTests()">🔄 Ejecutar Pruebas</button>
+            <button class="btn-test" onclick="testBinance()">🌐 Probar Binance API</button>
+            <button class="btn-test" onclick="window.location.href='/signal-bot'">🚀 Ir a Signal Bot</button>
+        </div>
+        
+        <div id="results"></div>
+        
+        <div class="instructions">
+            <h3>📚 Cómo Verificar que Funciona:</h3>
+            <ol>
+                <li><strong>Base de Datos:</strong> Las tablas <code>signal_bots</code> y <code>bot_signals</code> deben existir</li>
+                <li><strong>Archivos Backend:</strong> 5 archivos Python creados (signal_bot_routes.py, market_data.py, etc.)</li>
+                <li><strong>API de Binance:</strong> Debe responder con precios en tiempo real</li>
+                <li><strong>Crear un Bot:</strong>
+                    <ul>
+                        <li>Ve a la página de Signal Bot</li>
+                        <li>Arrastra bloques para crear una estrategia</li>
+                        <li>Haz clic en "Crear Nuevo Bot"</li>
+                        <li>Ingresa configuración y credenciales de Telegram</li>
+                        <li>Guarda el bot</li>
+                        <li>Deberías ver el bot en la lista</li>
+                    </ul>
+                </li>
+                <li><strong>Prueba con Telegram:</strong>
+                    <ul>
+                        <li>Crea un bot en Telegram con @BotFather</li>
+                        <li>Obtén el token del bot</li>
+                        <li>Envía un mensaje a tu bot</li>
+                        <li>Obtén tu Chat ID</li>
+                        <li>Usa el botón "Enviar Prueba" en la interfaz</li>
+                        <li>Deberías recibir un mensaje en Telegram</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(tests) {
+            const container = document.getElementById('system-status');
+            container.innerHTML = '';
+            
+            tests.forEach(test => {
+                const div = document.createElement('div');
+                div.className = test.ok ? 'status-item status-ok' : 'status-item status-error';
+                div.innerHTML = `
+                    <span class="status-icon">${test.ok ? '✅' : '❌'}</span>
+                    <div>
+                        <strong>${test.name}</strong><br>
+                        <small>${test.message}</small>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function runTests() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="test-section"><h2>🔄 Ejecutando pruebas...</h2></div>';
+            
+            const tests = [];
+            
+            // Test 1: Verificar endpoints de la API
+            try {
+                const response = await fetch('/api/signal-bots/list');
+                const contentType = response.headers.get('content-type');
+                if (response.ok && contentType && contentType.includes('application/json')) {
+                    const bots = await response.json();
+                    tests.push({
+                        ok: true,
+                        name: 'API REST Endpoints',
+                        message: `Backend funcional. Bots registrados: ${bots.length}`
+                    });
+                } else {
+                    tests.push({
+                        ok: false,
+                        name: 'API REST Endpoints',
+                        message: 'Backend no responde correctamente'
+                    });
+                }
+            } catch (e) {
+                tests.push({
+                    ok: false,
+                    name: 'API REST Endpoints',
+                    message: `Error: ${e.message}`
+                });
+            }
+            
+            // Test 2: Verificar que podemos crear bots en localStorage
+            try {
+                const testBot = {
+                    id: 'test_' + Date.now(),
+                    name: 'Test Bot',
+                    status: 'paused'
+                };
+                localStorage.setItem('test_bot_system', JSON.stringify(testBot));
+                const stored = JSON.parse(localStorage.getItem('test_bot_system'));
+                localStorage.removeItem('test_bot_system');
+                
+                tests.push({
+                    ok: stored.id === testBot.id,
+                    name: 'LocalStorage',
+                    message: 'Sistema de almacenamiento local funcional'
+                });
+            } catch (e) {
+                tests.push({
+                    ok: false,
+                    name: 'LocalStorage',
+                    message: `Error: ${e.message}`
+                });
+            }
+            
+            showStatus(tests);
+            
+            resultsDiv.innerHTML = `
+                <div class="test-section">
+                    <h2>✅ Pruebas Completadas</h2>
+                    <p>Total: ${tests.length} pruebas</p>
+                    <p>Exitosas: ${tests.filter(t => t.ok).length}</p>
+                    <p>Fallidas: ${tests.filter(t => !t.ok).length}</p>
+                </div>
+            `;
+        }
+
+        async function testBinance() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="test-section"><h2>🌐 Probando Binance API...</h2></div>';
+            
+            try {
+                // Test ping
+                const pingResponse = await fetch('https://api.binance.com/api/v3/ping');
+                if (!pingResponse.ok) throw new Error('Ping failed');
+                
+                // Test price
+                const priceResponse = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+                const priceData = await priceResponse.json();
+                
+                resultsDiv.innerHTML = `
+                    <div class="test-section">
+                        <h2>✅ Binance API Funcional</h2>
+                        <div class="status-item status-ok">
+                            <span class="status-icon">💰</span>
+                            <div>
+                                <strong>Precio BTC/USDT</strong><br>
+                                <small>$${parseFloat(priceData.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</small>
+                            </div>
+                        </div>
+                        <p>La API de Binance está accesible y devolviendo datos en tiempo real.</p>
+                    </div>
+                `;
+            } catch (e) {
+                resultsDiv.innerHTML = `
+                    <div class="test-section">
+                        <h2>❌ Error con Binance API</h2>
+                        <div class="status-item status-error">
+                            <span class="status-icon">⚠️</span>
+                            <div>
+                                <strong>Error de Conexión</strong><br>
+                                <small>${e.message}</small>
+                            </div>
+                        </div>
+                        <p>No se pudo conectar con la API de Binance. Verifica tu conexión a internet.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Ejecutar pruebas automáticamente al cargar
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>

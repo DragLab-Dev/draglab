@@ -1,0 +1,210 @@
+<!-- Botón de Retroceder -->
+<button class="btn-back" onclick="window.location.href='/'" title="Volver">←</button>
+
+<!-- Menú Desplegable -->
+<div class="nav-menu-wrapper">
+    <button class="menu-toggle" onclick="toggleMenu()" title="Menú">☰</button>
+    <div class="dropdown-menu" id="navMenu">
+        <a href="/">🏠 Inicio</a>
+        <a href="/backtest">📊 Backtest</a>
+        <a href="/trading-bot">🤖 Trading Bot</a>
+        <div style="height: 1px; background: rgba(0,0,0,0.1); margin: 5px 0;"></div>
+        <a href="/welcome">👤 Panel Usuario</a>
+        <a href="/admin" id="adminLink" style="display: none;">🔒 Admin</a>
+        <div style="height: 1px; background: rgba(0,0,0,0.1); margin: 5px 0;"></div>
+        <button onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
+        <button onclick="toggleLanguage()">🌐 Idioma</button>
+        <div style="height: 1px; background: rgba(0,0,0,0.1); margin: 5px 0;"></div>
+        <button onclick="logout()">🚪 Cerrar Sesión</button>
+    </div>
+</div>
+
+<style>
+/* Botón de Retroceder */
+.btn-back {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    z-index: 1001;
+}
+
+.btn-back:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    background: rgba(255,255,255,0.3);
+}
+
+body.dark-mode .btn-back {
+    background: rgba(30,30,46,0.8);
+    border-color: rgba(255,255,255,0.2);
+}
+
+/* Menú Desplegable */
+.nav-menu-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+}
+
+.menu-toggle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.menu-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    background: rgba(255,255,255,0.3);
+}
+
+body.dark-mode .menu-toggle {
+    background: rgba(30,30,46,0.8);
+    border-color: rgba(255,255,255,0.2);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 60px;
+    background: rgba(255,255,255,0.95);
+    min-width: 200px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu.active {
+    display: block;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    text-decoration: none;
+    color: #1a1a2e;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+body.dark-mode .dropdown-menu {
+    background: rgba(30,30,46,0.95);
+}
+
+body.dark-mode .dropdown-menu a,
+body.dark-mode .dropdown-menu button {
+    color: #e0e0e0;
+}
+
+body.dark-mode .dropdown-menu a:hover,
+body.dark-mode .dropdown-menu button:hover {
+    background: rgba(102,126,234,0.2);
+}
+</style>
+
+<script>
+// Toggle menú desplegable
+function toggleMenu() {
+    const menu = document.getElementById('navMenu');
+    menu.classList.toggle('active');
+}
+
+// Cerrar menú al hacer click fuera
+document.addEventListener('click', function(event) {
+    const menuWrapper = document.querySelector('.nav-menu-wrapper');
+    const menu = document.getElementById('navMenu');
+    if (menuWrapper && !menuWrapper.contains(event.target)) {
+        menu.classList.remove('active');
+    }
+});
+
+// Función de logout
+function logout() {
+    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+        fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            window.location.href = '/welcome';
+        });
+    }
+}
+
+// Verificar si es admin
+function checkAdminStatus() {
+    fetch('/api/user-info')
+        .then(res => res.json())
+        .then(data => {
+            if (data.is_superadmin) {
+                const adminLink = document.getElementById('adminLink');
+                if (adminLink) {
+                    adminLink.style.display = 'flex';
+                }
+            }
+        })
+        .catch(() => {});
+}
+
+// Llamar al cargar la página
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkAdminStatus);
+} else {
+    checkAdminStatus();
+}
+</script>

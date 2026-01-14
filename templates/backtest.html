@@ -1,0 +1,3916 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Strategy Creator - DragLab</title>
+    <style>
+        /* MENÚ UNIVERSAL INLINE */
+        .universal-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        .universal-menu .menu-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.9);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .universal-menu .menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .universal-menu-content {
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background: white;
+            min-width: 250px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .universal-menu-content.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .universal-menu-content a,
+        .universal-menu-content button {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .universal-menu-content a:hover,
+        .universal-menu-content button:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .universal-menu-content .menu-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+            margin: 5px 0;
+        }
+        body.dark-mode .universal-menu-content {
+            background: #1e1e2e;
+        }
+        body.dark-mode .universal-menu-content a,
+        body.dark-mode .universal-menu-content button {
+            color: #fff;
+        }
+        body.dark-mode .universal-menu-content .menu-divider {
+            background: rgba(255,255,255,0.1);
+        }
+        /* FIN MENÚ UNIVERSAL */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+            color: #f0f0f0;
+        }
+
+        body.dark-mode .section {
+            background: #1e1e2e;
+            color: #f0f0f0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        body.dark-mode .file-item {
+            background: #2a2a3e;
+            color: #f0f0f0;
+            border: 1px solid #3a3a4e;
+        }
+
+        body.dark-mode .stat-box {
+            background: #2a2a3e;
+            color: #f0f0f0;
+            border: 2px solid #3a3a4e;
+        }
+
+        body.dark-mode .info-box {
+            background: #252535;
+            color: #f0f0f0;
+            border-left-color: #667eea;
+        }
+
+        body.dark-mode select,
+        body.dark-mode input {
+            background: #2a2a3e;
+            color: #f0f0f0;
+            border-color: #4a4a6e;
+        }
+
+        body.dark-mode select:focus,
+        body.dark-mode input:focus {
+            border-color: #667eea;
+            background: #323244;
+        }
+
+        body.dark-mode .section-header h2,
+        body.dark-mode h2,
+        body.dark-mode h3 {
+            color: #ffffff;
+        }
+
+        body.dark-mode label {
+            color: #d0d0d0;
+        }
+
+        body.dark-mode .file-name {
+            color: #f0f0f0;
+        }
+
+        body.dark-mode .stat-box p {
+            color: #ffffff;
+        }
+
+        body.dark-mode .file-size {
+            color: #b0b0b0;
+        }
+
+        body.dark-mode small {
+            color: #c0c0c0;
+        }
+        
+        body.dark-mode p,
+        body.dark-mode li {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode strong {
+            color: #ffffff;
+        }
+        
+        body.dark-mode .palette-title {
+            color: #ffffff;
+            font-weight: 700;
+        }
+        
+        body.dark-mode .blocks-palette {
+            background: #1e1e2e;
+            border-color: #444;
+        }
+        
+        body.dark-mode .drop-zone {
+            background: #1e1e2e;
+            border-color: #555;
+        }
+        
+        body.dark-mode .drop-zone-title {
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        body.dark-mode .drop-zone-empty {
+            color: #aaa;
+        }
+        
+        body.dark-mode .info-text {
+            color: #e0e0e0 !important;
+        }
+        
+        /* Mejor contraste para fondos claros en modo oscuro */
+        body.dark-mode [style*="background: #e3f2fd"],
+        body.dark-mode [style*="background: #f3e5f5"],
+        body.dark-mode [style*="background: #fff3e0"],
+        body.dark-mode [style*="background: #e8f5e9"],
+        body.dark-mode [style*="background: #f8f9fa"],
+        body.dark-mode [style*="background: #fff3cd"],
+        body.dark-mode [style*="background: #f8d7da"],
+        body.dark-mode [style*="background: #e7f3ff"] {
+            background: #2a2a3e !important;
+            color: #e0e0e0 !important;
+        }
+        
+        body.dark-mode [style*="background: linear-gradient"] {
+            color: #ffffff !important;
+        }
+        
+        body.dark-mode [style*="background: #e3f2fd"] *:not(.dropped-block):not(.dropped-block *),
+        body.dark-mode [style*="background: #f3e5f5"] *:not(.dropped-block):not(.dropped-block *),
+        body.dark-mode [style*="background: #fff3e0"] *:not(.dropped-block):not(.dropped-block *),
+        body.dark-mode [style*="background: #e8f5e9"] *:not(.dropped-block):not(.dropped-block *),
+        body.dark-mode [style*="background: #f8f9fa"] *:not(.dropped-block):not(.dropped-block *),
+        body.dark-mode [style*="background: #fff3cd"] *:not(.dropped-block):not(.dropped-block *),
+        body.dark-mode [style*="background: #f8d7da"] *:not(.dropped-block):not(.dropped-block *),
+        body.dark-mode [style*="background: #e7f3ff"] *:not(.dropped-block):not(.dropped-block *) {
+            color: #e0e0e0 !important;
+        }
+        
+        body.dark-mode [style*="background: #f8f9fa"] h4,
+        body.dark-mode [style*="background: #fff3cd"] h4 {
+            color: #ffffff !important;
+        }
+        
+        body.dark-mode .auto-download-text {
+            color: #ffffff !important;
+        }
+        
+        /* Asegurar que dropped-block en modo oscuro mantenga colores oscuros */
+        body.dark-mode .dropped-block,
+        body.dark-mode .dropped-block * {
+            background-color: inherit;
+            color: inherit;
+        }
+        
+        body.dark-mode .dropped-block label,
+        body.dark-mode .dropped-block input,
+        body.dark-mode .dropped-block select {
+            color: #e0e0e0;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            right: 180px;
+            background: rgba(255, 100, 150, 0.3);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .dark-mode-toggle:hover,
+        .lang-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        body.dark-mode .dark-mode-toggle,
+        body.dark-mode .lang-toggle {
+            background: rgba(100, 100, 120, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Botón de Retroceder */
+        .btn-back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            z-index: 1001;
+        }
+        
+        .btn-back:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.3);
+        }
+        
+        body.dark-mode .btn-back {
+            background: rgba(30,30,46,0.8);
+            border-color: rgba(255,255,255,0.2);
+        }
+        
+        /* Menú Desplegable */
+        .nav-menu-wrapper {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+        }
+        
+        .menu-toggle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .menu-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.3);
+        }
+        
+        body.dark-mode .menu-toggle {
+            background: rgba(30,30,46,0.8);
+            border-color: rgba(255,255,255,0.2);
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background: rgba(255,255,255,0.95);
+            min-width: 200px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .dropdown-menu.active {
+            display: block;
+        }
+        
+        .dropdown-menu a,
+        .dropdown-menu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            text-decoration: none;
+            color: #1a1a2e;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-menu a:hover,
+        .dropdown-menu button:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        body.dark-mode .dropdown-menu {
+            background: rgba(30,30,46,0.95);
+        }
+        
+        body.dark-mode .dropdown-menu a,
+        body.dark-mode .dropdown-menu button {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .dropdown-menu a:hover,
+        body.dark-mode .dropdown-menu button:hover {
+            background: rgba(102,126,234,0.2);
+        }
+
+        body.dark-mode button.btn {
+            background: linear-gradient(135deg, #7b8ff0 0%, #9060c2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(123, 143, 240, 0.3);
+        }
+
+        body.dark-mode button.btn:hover {
+            background: linear-gradient(135deg, #8a9ef5 0%, #a070d2 100%);
+        }
+
+        body.dark-mode .section-header {
+            border-bottom-color: #3a3a4e;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        body.dark-mode .section {
+            background: #1a1a2e;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+
+        .section-icon {
+            font-size: 2em;
+        }
+
+        .section-header h2 {
+            color: #333;
+            font-size: 1.8em;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        body.dark-mode .btn-secondary {
+            background: linear-gradient(135deg, #34a853 0%, #2dd4bf 100%);
+            box-shadow: 0 4px 15px rgba(52, 168, 83, 0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box.success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            color: #155724;
+        }
+
+        .result-box.error {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            color: #721c24;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box.positive {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+
+        .stat-box.negative {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+
+        .stat-box h3 {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        body.dark-mode .stat-box h3 {
+            color: #c0c0c0;
+        }
+
+        .stat-box p {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        body.dark-mode .stat-box.positive {
+            background: #1a3d2a;
+            border-color: #4ade80;
+        }
+
+        body.dark-mode .stat-box.negative {
+            background: #3d1a1a;
+            border-color: #f87171;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: #1976D2;
+        }
+
+        .info-box small {
+            display: block;
+            margin-top: 5px;
+            color: #555;
+        }
+
+        body.dark-mode .info-box small {
+            color: #d0d0d0;
+        }
+
+        body.dark-mode .info-box strong {
+            color: #8a9ef5;
+        }
+
+        body.dark-mode .result-box.success {
+            background: #1a3d2a;
+            border-left-color: #4ade80;
+            color: #c0f0d0;
+        }
+
+        body.dark-mode .result-box.error {
+            background: #3d1a1a;
+            border-left-color: #f87171;
+            color: #f0c0c0;
+        }
+
+        .files-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        body.dark-mode .files-list {
+            border-color: #3a3a4e;
+            background: #1e1e2e;
+        }
+
+        .file-item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+        }
+
+        .file-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+
+        .file-status.not-found {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+
+        body.dark-mode .file-status.not-found {
+            background: #3d3520;
+            color: #f0d080;
+            border-color: #8a7030;
+        }
+
+        body.dark-mode .loading p {
+            color: #f0f0f0;
+        }
+
+        body.dark-mode .spinner {
+            border-color: #3a3a4e;
+            border-top-color: #8a9ef5;
+        }
+
+        .tip-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 5px;
+        }
+
+        body.dark-mode .tip-box {
+            background: #3d3520;
+            color: #f0d080;
+            border: 1px solid #8a7030;
+        }
+
+        body.dark-mode .tip-box strong {
+            color: #ffd080;
+        }
+
+        .config-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .config-box {
+            background: #2a2a3e !important;
+            border: 1px solid #3a3a4e;
+        }
+
+        body.dark-mode .config-box h3 {
+            color: #ffffff !important;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .config-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        body.dark-mode .config-item {
+            border-bottom-color: #3a3a4e;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        body.dark-mode .config-label {
+            color: #b0b0b0;
+        }
+
+        .config-value {
+            color: #333;
+            margin-left: 10px;
+        }
+
+        body.dark-mode .config-value {
+            color: #f0f0f0;
+        }
+
+        .stats-title {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        body.dark-mode .stats-title {
+            color: #ffffff;
+        }
+
+        .section-subtitle {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        body.dark-mode .section-subtitle {
+            color: #ffffff;
+        }
+
+        .info-text {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        body.dark-mode .info-text {
+            color: #d0d0d0;
+        }
+
+        /* ==================== STRATEGY BUILDER ==================== */
+        .strategy-builder {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .blocks-palette {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            max-height: none;
+            overflow: visible;
+            transition: opacity 0.2s ease;
+        }
+        
+        .builder-canvas {
+            transition: background 0.2s ease;
+        }
+        
+        /* Cuando se arrastra, la paleta se oculta */
+        .blocks-palette.dragging {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .builder-canvas.dragging-active {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .palette-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        body.dark-mode .blocks-palette {
+            background: #1e1e2e;
+            border-color: #444;
+        }
+
+        .palette-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        body.dark-mode .palette-title {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .block {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: move;
+            font-size: 0.9em;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .block.indicator {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .block.condition {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .block.value {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .block.operator {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .block-icon {
+            margin-right: 8px;
+        }
+
+        .builder-canvas {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            min-height: 600px;
+            transition: background 0.2s ease;
+        }
+
+        body.dark-mode .builder-canvas {
+            background: #1e1e2e;
+            border-color: #3a3a4e;
+        }
+
+        .drop-zone {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 100px;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .drop-zone {
+            background: #2a2a3e;
+            border-color: #667eea;
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #764ba2;
+            transform: scale(1.02);
+        }
+
+        .drop-zone-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        body.dark-mode .drop-zone-title {
+            color: #8a9ef5;
+        }
+
+        .drop-zone-empty {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        body.dark-mode .drop-zone-empty {
+            color: #666;
+        }
+
+        .dropped-block {
+            background: #ffffff;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode .dropped-block {
+            background: #2a2a3e !important;
+            border-color: #8a9ef5;
+            color: #e0e0e0;
+        }
+
+        .dropped-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .dropped-block-title {
+            font-weight: 600;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.dark-mode .dropped-block-title {
+            color: #8a9ef5;
+        }
+
+        .block-actions {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .move-block {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .move-block:hover {
+            background: #5568d3;
+        }
+
+        .move-block:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        body.dark-mode .move-block {
+            background: #8a9ef5;
+        }
+
+        body.dark-mode .move-block:hover {
+            background: #7a8ee5;
+        }
+
+        .remove-block {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .remove-block:hover {
+            background: #c82333;
+        }
+
+        .block-params {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .param-group {
+            margin-bottom: 0;
+        }
+
+        .param-group label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        body.dark-mode .param-group label {
+            color: #b0b0b0;
+        }
+
+        .param-group input,
+        .param-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .strategy-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .chart-iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+            border-radius: 10px;
+        }
+
+        /* ==================== RESPONSIVE MOBILE ==================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .dark-mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .header p {
+                font-size: 1em;
+            }
+
+            .section {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .section-header h2 {
+                font-size: 1.4em;
+            }
+
+            .section-icon {
+                font-size: 1.5em;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
+            }
+
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-box {
+                padding: 12px;
+            }
+
+            .stat-box h3 {
+                font-size: 0.75em;
+            }
+
+            .stat-box p {
+                font-size: 1.2em;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            input[type="text"],
+            input[type="date"],
+            input[type="number"],
+            select {
+                padding: 10px;
+                font-size: 16px; /* Evita zoom en iOS */
+            }
+
+            .files-list {
+                max-height: 200px;
+            }
+
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .config-box {
+                padding: 15px;
+            }
+
+            .config-item {
+                font-size: 0.9em;
+            }
+
+            .info-text {
+                font-size: 0.95em;
+            }
+
+            /* Mejorar iframe en móvil */
+            iframe {
+                height: 400px !important;
+            }
+
+            .chart-iframe {
+                height: 400px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dark-mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .lang-toggle {
+                top: 55px;
+                right: 10px;
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+                padding: 10px 0;
+                padding-top: 50px;
+            }
+
+            .header p {
+                font-size: 0.85em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-box h3 {
+                font-size: 0.85em;
+            }
+
+            .section {
+                padding: 15px 10px;
+                margin-bottom: 15px;
+            }
+
+            .section-header h2 {
+                font-size: 1.3em;
+            }
+
+            .chart-iframe {
+                height: 300px !important;
+            }
+
+            iframe {
+                height: 300px !important;
+            }
+
+            .strategy-builder {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .blocks-palette {
+                grid-template-columns: 1fr !important;
+                gap: 10px;
+                padding: 12px;
+                max-height: none;
+                overflow: visible;
+            }
+            
+            .palette-section {
+                margin-bottom: 12px;
+            }
+            
+            .palette-title {
+                font-size: 0.95em;
+                margin-bottom: 10px;
+            }
+            
+            .block {
+                padding: 10px;
+                font-size: 0.85em;
+                margin-bottom: 6px;
+                min-height: 50px;
+            }
+            
+            .block small {
+                font-size: 0.7em;
+                display: block;
+                margin-top: 3px;
+            }
+            
+            .drop-zone {
+                min-height: 100px;
+            }
+            
+            .drop-zone-title {
+                font-size: 0.9em;
+                padding: 8px;
+            }
+            
+            .drop-zone-empty {
+                font-size: 0.85em;
+                padding: 15px;
+            }
+            
+            .builder-canvas {
+                max-height: none;
+                overflow-y: visible;
+            }
+
+            .block-params {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==================== MODAL DISCLAIMER ==================== */
+        .disclaimer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .disclaimer-modal.show,
+        .disclaimer-modal.active {
+            display: flex;
+        }
+
+        .disclaimer-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease;
+        }
+
+        body.dark-mode .disclaimer-content {
+            background: #1e1e2e;
+            color: #f0f0f0;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .disclaimer-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        body.dark-mode .disclaimer-header {
+            border-bottom-color: #3a3a4e;
+        }
+
+        .disclaimer-header h2 {
+            margin: 0;
+            color: #dc3545;
+            font-size: 1.5em;
+        }
+
+        body.dark-mode .disclaimer-header h2 {
+            color: #ff6b6b;
+        }
+
+        .disclaimer-text {
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+
+        .disclaimer-text p {
+            margin-bottom: 15px;
+        }
+
+        .disclaimer-text strong {
+            color: #dc3545;
+        }
+
+        body.dark-mode .disclaimer-text strong {
+            color: #ff6b6b;
+        }
+
+        .disclaimer-list {
+            background: #fff3cd;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .disclaimer-list {
+            background: #3d3520;
+            border-left-color: #f0ad4e;
+        }
+
+        .disclaimer-list ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .disclaimer-list li {
+            margin: 8px 0;
+        }
+
+        .disclaimer-checkbox {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            border: 2px solid #dee2e6;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .disclaimer-checkbox {
+            background: #2a2a3e;
+            border-color: #4a4a6e;
+        }
+
+        .disclaimer-checkbox:hover {
+            border-color: #667eea;
+            background: #e7f3ff;
+        }
+
+        body.dark-mode .disclaimer-checkbox:hover {
+            border-color: #667eea;
+            background: #323244;
+        }
+
+        .disclaimer-checkbox input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .disclaimer-checkbox label {
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0;
+            flex: 1;
+        }
+
+        .disclaimer-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .disclaimer-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .disclaimer-btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .disclaimer-btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .disclaimer-btn-accept {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .disclaimer-btn-accept:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .disclaimer-btn-accept:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de Retroceder -->
+    <button class="btn-back" onclick="window.location.href='/'" title="Volver">←</button>
+    
+    <!-- MENÚ UNIVERSAL -->
+    <div class="universal-menu">
+        <button class="menu-btn" onclick="toggleUniversalMenu()" title="Menú">☰</button>
+        <div class="universal-menu-content" id="universalMenu">
+            <a href="/">🏠 Inicio</a>
+            <a href="/backtest">🧱 Visual Strategy Builder</a>
+            <a href="/trading-bot">🤖 Trading Bot</a>
+            <div class="menu-divider"></div>
+            <a href="/user-panel">👤 Mi Cuenta</a>
+            <a href="/subscriptions">💎 Suscripciones</a>
+            <a href="/admin/panel" id="adminMenuLink" style="display: none;">🔒 Panel Admin</a>
+            <div class="menu-divider"></div>
+            <button onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
+            <button onclick="toggleLanguage()">🌐 Idioma</button>
+            <div class="menu-divider"></div>
+            <button onclick="logout()">🚪 Cerrar Sesión</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 data-lang-es="🧱 DragLab - Visual Strategy Builder" data-lang-en="🧱 DragLab - Visual Strategy Builder">🧱 DragLab - Visual Strategy Builder</h1>
+            <p data-lang-es="Crea estrategias mediante Bloques - SIN Programar - Backtest integrado con datos de Binance" data-lang-en="Build strategies with Blocks - NO Coding - Integrated Backtest with Binance data">Crea estrategias mediante Bloques - SIN Programar - Backtest integrado con datos de Binance</p>
+        </div>
+
+        <!-- SECCIÓN 1: GUÍA DE USO -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">�</span>
+                <h2 data-lang-es="Guia de Uso" data-lang-en="User Guide">1. Guía de Uso</h2>
+            </div>
+
+            <div class="info-text" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: white;" data-lang-es="🎯 Cómo Funciona Visual Strategy Builder" data-lang-en="🎯 How Visual Strategy Builder Works">🎯 Cómo Funciona Visual Strategy Builder</h3>
+                <p style="margin: 15px 0; line-height: 2; font-size: 1.05em;">
+                    <strong data-lang-es="Paso 1:" data-lang-en="Step 1:">Paso 1:</strong> <span data-lang-es="Arrastra bloques desde la paleta al área de construcción" data-lang-en="Drag blocks from the palette to the build area">Arrastra bloques desde la paleta al área de construcción</span><br>
+                    <strong data-lang-es="Paso 2:" data-lang-en="Step 2:">Paso 2:</strong> <span data-lang-es="Combina Indicadores (EMA, RSI, etc.) con Operadores (>, <, etc.)" data-lang-en="Combine Indicators (EMA, RSI, etc.) with Operators (>, <, etc.)">Combina Indicadores (EMA, RSI, etc.) con Operadores (>, <, etc.)</span><br>
+                    <strong data-lang-es="Paso 3:" data-lang-en="Step 3:">Paso 3:</strong> <span data-lang-es="Usa bloques de Lógica (AND, OR) para condiciones complejas" data-lang-en="Use Logic blocks (AND, OR) for complex conditions">Usa bloques de Lógica (AND, OR) para condiciones complejas</span><br>
+                    <strong data-lang-es="Paso 4:" data-lang-en="Step 4:">Paso 4:</strong> <span data-lang-es="Escribe el símbolo del activo y ejecuta el backtest" data-lang-en="Enter the asset symbol and run the backtest">Escribe el símbolo del activo y ejecuta el backtest</span><br>
+                    <strong data-lang-es="Paso 5:" data-lang-en="Step 5:">Paso 5:</strong> <span data-lang-es="Los datos se descargan automáticamente desde Binance" data-lang-en="Data is downloaded automatically from Binance">Los datos se descargan automáticamente desde Binance</span><br>
+                    <strong data-lang-es="Paso 6:" data-lang-en="Step 6:">Paso 6:</strong> <span data-lang-es="Analiza resultados y optimiza tu estrategia" data-lang-en="Analyze results and optimize your strategy">Analiza resultados y optimiza tu estrategia</span>
+                </p>
+                <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <strong data-lang-es="🚀 Sin Configuración Previa:" data-lang-en="🚀 No Prior Setup:">🚀 Sin Configuración Previa:</strong> <span class="auto-download-text" data-lang-es="No necesitas descargar datos manualmente, todo es automático!" data-lang-en="You don't need to download data manually, everything is automatic!">No necesitas descargar datos manualmente, todo es automático!</span>
+                </div>
+            </div>
+
+            <h3 style="margin: 25px 0 15px 0; color: #333;" data-lang-es="📚 Ejemplos Prácticos" data-lang-en="📚 Practical Examples">📚 Ejemplos Prácticos</h3>
+
+            <div class="grid-2" style="margin-bottom: 25px;">
+                <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; border-left: 4px solid #2196f3;">
+                    <h4 style="margin-top: 0; color: #1976d2;" data-lang-es="📈 Ejemplo 1: Estrategia EMA Simple" data-lang-en="📈 Example 1: Simple EMA Strategy">📈 Ejemplo 1: Estrategia EMA Simple</h4>
+                    <p style="line-height: 1.8; margin: 10px 0;">
+                        <strong data-lang-es="Entrada LONG:" data-lang-en="LONG Entry:">Entrada LONG:</strong><br>
+                        <span data-lang-es='1️⃣ Arrastra "Precio" → 2️⃣ "Mayor que (>)" → 3️⃣ "EMA" (período: 50)' data-lang-en='1️⃣ Drag "Price" → 2️⃣ "Greater than (>)" → 3️⃣ "EMA" (period: 50)'>1️⃣ Arrastra "Precio" → 2️⃣ "Mayor que (>)" → 3️⃣ "EMA" (período: 50)</span><br>
+                        <strong data-lang-es="💡 Significado LONG:" data-lang-en="💡 LONG Meaning:">💡 Significado LONG:</strong> <span data-lang-es="Compra cuando el precio sube por encima de la EMA de 50 períodos (tendencia alcista confirmada)" data-lang-en="Buy when price rises above 50-period EMA (confirmed uptrend)">Compra cuando el precio sube por encima de la EMA de 50 períodos (tendencia alcista confirmada)</span><br><br>
+                        <strong data-lang-es="Salida LONG:" data-lang-en="LONG Exit:">Salida LONG:</strong><br>
+                        <span data-lang-es='1️⃣ Arrastra "Precio" → 2️⃣ "Menor que (<)" → 3️⃣ "EMA" (período: 50)' data-lang-en='1️⃣ Drag "Price" → 2️⃣ "Less than (<)" → 3️⃣ "EMA" (period: 50)'>1️⃣ Arrastra "Precio" → 2️⃣ "Menor que (<)" → 3️⃣ "EMA" (período: 50)</span><br>
+                        <strong data-lang-es="💡 Significado:" data-lang-en="💡 Meaning:">💡 Significado:</strong> <span data-lang-es="Vende cuando el precio cae por debajo de la EMA (pérdida de momentum alcista)" data-lang-en="Sell when price falls below EMA (loss of bullish momentum)">Vende cuando el precio cae por debajo de la EMA (pérdida de momentum alcista)</span>
+                    </p>
+                </div>
+
+                <div style="background: #f3e5f5; padding: 20px; border-radius: 10px; border-left: 4px solid #9c27b0;">
+                    <h4 style="margin-top: 0; color: #7b1fa2;" data-lang-es="⚡ Ejemplo 2: RSI Sobrecompra/Sobreventa" data-lang-en="⚡ Example 2: RSI Overbought/Oversold">⚡ Ejemplo 2: RSI Sobrecompra/Sobreventa</h4>
+                    <p style="line-height: 1.8; margin: 10px 0;">
+                        <strong data-lang-es="Entrada LONG:" data-lang-en="LONG Entry:">Entrada LONG:</strong><br>
+                        <span data-lang-es='1️⃣ "RSI" (período: 14) → 2️⃣ "Menor que (<)" → 3️⃣ "Número" (valor: 30)' data-lang-en='1️⃣ "RSI" (period: 14) → 2️⃣ "Less than (<)" → 3️⃣ "Number" (value: 30)'>1️⃣ "RSI" (período: 14) → 2️⃣ "Menor que (<)" → 3️⃣ "Número" (valor: 30)</span><br>
+                        <strong data-lang-es="💡 Significado LONG:" data-lang-en="💡 LONG Meaning:">💡 Significado LONG:</strong> <span data-lang-es="Compra en zona de sobreventa cuando el RSI está por debajo de 30 (precio muy bajo, probable rebote)" data-lang-en="Buy in oversold zone when RSI is below 30 (very low price, likely bounce)">Compra en zona de sobreventa cuando el RSI está por debajo de 30 (precio muy bajo, probable rebote)</span><br><br>
+                        <strong data-lang-es="Entrada SHORT:" data-lang-en="SHORT Entry:">Entrada SHORT:</strong><br>
+                        <span data-lang-es='1️⃣ "RSI" (período: 14) → 2️⃣ "Mayor que (>)" → 3️⃣ "Número" (valor: 70)' data-lang-en='1️⃣ "RSI" (period: 14) → 2️⃣ "Greater than (>)" → 3️⃣ "Number" (value: 70)'>1️⃣ "RSI" (período: 14) → 2️⃣ "Mayor que (>)" → 3️⃣ "Número" (valor: 70)</span><br>
+                        <strong data-lang-es="💡 Significado SHORT:" data-lang-en="💡 SHORT Meaning:">💡 Significado SHORT:</strong> <span data-lang-es="Vende en corto cuando RSI supera 70 (sobrecompra, probable corrección bajista)" data-lang-en="Sell short when RSI exceeds 70 (overbought, likely bearish correction)">Vende en corto cuando RSI supera 70 (sobrecompra, probable corrección bajista)</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-bottom: 25px;">
+                <div style="background: #fff3e0; padding: 20px; border-radius: 10px; border-left: 4px solid #ff9800;">
+                    <h4 style="margin-top: 0; color: #f57c00;" data-lang-es="🌊 Ejemplo 3: MACD Crossover" data-lang-en="🌊 Example 3: MACD Crossover">🌊 Ejemplo 3: MACD Crossover</h4>
+                    <p style="line-height: 1.8; margin: 10px 0;">
+                        <strong data-lang-es="Entrada LONG:" data-lang-en="LONG Entry:">Entrada LONG:</strong><br>
+                        <span data-lang-es='1️⃣ "MACD" → 2️⃣ "Cruza (✖)" → 3️⃣ "Mayor que (>)" → 4️⃣ "Número" (0)' data-lang-en='1️⃣ "MACD" → 2️⃣ "Crosses (✖)" → 3️⃣ "Greater than (>)" → 4️⃣ "Number" (0)'>1️⃣ "MACD" → 2️⃣ "Cruza (✖)" → 3️⃣ "Mayor que (>)" → 4️⃣ "Número" (0)</span><br>
+                        <strong data-lang-es="💡 Significado LONG:" data-lang-en="💡 LONG Meaning:">💡 Significado LONG:</strong> <span data-lang-es="Compra cuando MACD cruza por encima de la línea de señal en territorio positivo (fuerte momentum alcista)" data-lang-en="Buy when MACD crosses above signal line in positive territory (strong bullish momentum)">Compra cuando MACD cruza por encima de la línea de señal en territorio positivo (fuerte momentum alcista)</span><br><br>
+                        <strong data-lang-es="Entrada SHORT:" data-lang-en="SHORT Entry:">Entrada SHORT:</strong><br>
+                        <span data-lang-es='1️⃣ "MACD" → 2️⃣ "Cruza (✖)" → 3️⃣ "Menor que (<)" → 4️⃣ "Número" (0)' data-lang-en='1️⃣ "MACD" → 2️⃣ "Crosses (✖)" → 3️⃣ "Less than (<)" → 4️⃣ "Number" (0)'>1️⃣ "MACD" → 2️⃣ "Cruza (✖)" → 3️⃣ "Menor que (<)" → 4️⃣ "Número" (0)</span><br>
+                        <strong data-lang-es="💡 Significado SHORT:" data-lang-en="💡 SHORT Meaning:">💡 Significado SHORT:</strong> <span data-lang-es="Vende en corto cuando MACD cruza por debajo de señal en territorio negativo (fuerte momentum bajista)" data-lang-en="Sell short when MACD crosses below signal in negative territory (strong bearish momentum)">Vende en corto cuando MACD cruza por debajo de señal en territorio negativo (fuerte momentum bajista)</span>
+                    </p>
+                </div>
+
+                <div style="background: #e8f5e9; padding: 20px; border-radius: 10px; border-left: 4px solid #4caf50;">
+                    <h4 style="margin-top: 0; color: #388e3c;" data-lang-es="🎯 Ejemplo 4: Estrategia Combinada (Avanzado)" data-lang-en="🎯 Example 4: Combined Strategy (Advanced)">🎯 Ejemplo 4: Estrategia Combinada (Avanzado)</h4>
+                    <p style="line-height: 1.8; margin: 10px 0;">
+                        <strong data-lang-es="Entrada LONG:" data-lang-en="LONG Entry:">Entrada LONG:</strong><br>
+                        <span data-lang-es='1️⃣ "Precio" > "EMA(50)" → 2️⃣ "AND (∧)" → 3️⃣ "RSI(14)" > "Número(50)"' data-lang-en='1️⃣ "Price" > "EMA(50)" → 2️⃣ "AND (∧)" → 3️⃣ "RSI(14)" > "Number(50)"'>1️⃣ "Precio" > "EMA(50)" → 2️⃣ "AND (∧)" → 3️⃣ "RSI(14)" > "Número(50)"</span><br>
+                        <strong data-lang-es="💡 Significado LONG:" data-lang-en="💡 LONG Meaning:">💡 Significado LONG:</strong> <span data-lang-es="Solo compra si AMBAS condiciones se cumplen: precio arriba de EMA Y RSI en zona positiva (confirmación doble de tendencia alcista)" data-lang-en="Only buy if BOTH conditions are met: price above EMA AND RSI in positive zone (double confirmation of uptrend)">Solo compra si AMBAS condiciones se cumplen: precio arriba de EMA Y RSI en zona positiva (confirmación doble de tendencia alcista)</span><br><br>
+                        <strong data-lang-es="Entrada SHORT:" data-lang-en="SHORT Entry:">Entrada SHORT:</strong><br>
+                        <span data-lang-es='1️⃣ "Precio" < "EMA(50)" → 2️⃣ "AND (∧)" → 3️⃣ "RSI(14)" < "Número(50)"' data-lang-en='1️⃣ "Price" < "EMA(50)" → 2️⃣ "AND (∧)" → 3️⃣ "RSI(14)" < "Number(50)"'>1️⃣ "Precio" < "EMA(50)" → 2️⃣ "AND (∧)" → 3️⃣ "RSI(14)" < "Número(50)"</span><br>
+                        <strong data-lang-es="💡 Significado SHORT:" data-lang-en="💡 SHORT Meaning:">💡 Significado SHORT:</strong> <span data-lang-es="Solo vende en corto si AMBAS condiciones se cumplen: precio debajo de EMA Y RSI en zona negativa (confirmación doble de tendencia bajista)" data-lang-en="Only sell short if BOTH conditions are met: price below EMA AND RSI in negative zone (double confirmation of downtrend)">Solo vende en corto si AMBAS condiciones se cumplen: precio debajo de EMA Y RSI en zona negativa (confirmación doble de tendencia bajista)</span><br><br>
+                        <strong data-lang-es="Salida LONG:" data-lang-en="LONG Exit:">Salida LONG:</strong> <span data-lang-es='"RSI(14)" > "Número(70)" (Sobrecompra)' data-lang-en='"RSI(14)" > "Number(70)" (Overbought)'>"RSI(14)" > "Número(70)" (Sobrecompra)</span><br>
+                        <strong data-lang-es="Salida SHORT:" data-lang-en="SHORT Exit:">Salida SHORT:</strong> <span data-lang-es='"RSI(14)" < "Número(30)" (Sobreventa)' data-lang-en='"RSI(14)" < "Number(30)" (Oversold)'>"RSI(14)" < "Número(30)" (Sobreventa)</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                    <h4 style="margin-top: 0;" data-lang-es="📦 Indicadores Disponibles" data-lang-en="📦 Available Indicators">📦 Indicadores Disponibles</h4>
+                    <ul style="line-height: 2; margin: 10px 0;">
+                        <li data-lang-es="EMA/SMA: Medias móviles exponencial y simple" data-lang-en="EMA/SMA: Exponential and simple moving averages"><strong>EMA/SMA:</strong> Medias móviles exponencial y simple</li>
+                        <li data-lang-es="RSI: Índice de Fuerza Relativa (sobrecompra/sobreventa)" data-lang-en="RSI: Relative Strength Index (overbought/oversold)"><strong>RSI:</strong> Índice de Fuerza Relativa (sobrecompra/sobreventa)</li>
+                        <li data-lang-es="MACD: Convergencia/Divergencia (momentum)" data-lang-en="MACD: Convergence/Divergence (momentum)"><strong>MACD:</strong> Convergencia/Divergencia (momentum)</li>
+                        <li data-lang-es="Bollinger: Bandas de volatilidad superior/media/inferior" data-lang-en="Bollinger: Upper/middle/lower volatility bands"><strong>Bollinger:</strong> Bandas de volatilidad superior/media/inferior</li>
+                        <li data-lang-es="ATR: Average True Range (volatilidad)" data-lang-en="ATR: Average True Range (volatility)"><strong>ATR:</strong> Average True Range (volatilidad)</li>
+                        <li data-lang-es="Swing: Máximos/Mínimos locales" data-lang-en="Swing: Local highs/lows"><strong>Swing:</strong> Máximos/Mínimos locales</li>
+                    </ul>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                    <h4 style="margin-top: 0;" data-lang-es="⚡ Operadores & Lógica" data-lang-en="⚡ Operators & Logic">⚡ Operadores & Lógica</h4>
+                    <ul style="line-height: 2; margin: 10px 0;">
+                        <li data-lang-es="> Mayor que: Precio > EMA" data-lang-en="> Greater than: Price > EMA"><strong>> Mayor que:</strong> Precio > EMA</li>
+                        <li data-lang-es="< Menor que: RSI < 30" data-lang-en="< Less than: RSI < 30"><strong>< Menor que:</strong> RSI < 30</li>
+                        <li data-lang-es="≥ ≤ = ≠ Otras comparaciones" data-lang-en="≥ ≤ = ≠ Other comparisons"><strong>≥ ≤ = ≠</strong> Otras comparaciones</li>
+                        <li data-lang-es="✖ Cruza: Detecta cuando una línea cruza otra" data-lang-en="✖ Crosses: Detects when one line crosses another"><strong>✖ Cruza:</strong> Detecta cuando una línea cruza otra</li>
+                        <li data-lang-es="AND (∧): Ambas condiciones deben cumplirse" data-lang-en="AND (∧): Both conditions must be met"><strong>AND (∧):</strong> Ambas condiciones deben cumplirse</li>
+                        <li data-lang-es="OR (∨): Al menos una condición" data-lang-en="OR (∨): At least one condition"><strong>OR (∨):</strong> Al menos una condición</li>
+                        <li data-lang-es="NOT/XOR/NAND/NOR: Lógica avanzada" data-lang-en="NOT/XOR/NAND/NOR: Advanced logic"><strong>NOT/XOR/NAND/NOR:</strong> Lógica avanzada</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; margin-top: 25px; border-radius: 5px;">
+                <h4 style="margin-top: 0; color: #f57f17;" data-lang-es="⚠️ Importante - Configurar Estrategia" data-lang-en="⚠️ Important - Configure Strategy">⚠️ Importante - Configurar Estrategia</h4>
+                <p style="margin: 10px 0; line-height: 1.8;">
+                    <span data-lang-es="DEBES configurar al menos 1 condición en 'Entrada LONG' o 'Entrada SHORT' antes de ejecutar el backtest. Si no arrastras ningún bloque, el sistema mostrará un error al intentar ejecutar." data-lang-en="You MUST configure at least 1 condition in 'LONG Entry' or 'SHORT Entry' before running the backtest. If you don't drag any blocks, the system will show an error when trying to execute."><strong>DEBES configurar al menos 1 condición</strong> en "Entrada LONG" o "Entrada SHORT" antes de ejecutar el backtest.<br>
+                    Si no arrastras ningún bloque, el sistema mostrará un error al intentar ejecutar.</span>
+                </p>
+            </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: CONSTRUCTOR VISUAL -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">🎨</span>
+                <h2 data-lang-es="2. Constructor Visual de Estrategia" data-lang-en="2. Visual Strategy Builder">2. Constructor Visual de Estrategia</h2>
+            </div>
+
+            <p class="info-text" style="margin-bottom: 20px;" data-lang-es="Arrastra y suelta bloques para construir tu estrategia de trading de forma visual." data-lang-en="Drag and drop blocks to build your trading strategy visually.">
+                Arrastra y suelta bloques para construir tu estrategia de trading de forma visual.
+            </p>
+
+            <div class="strategy-builder">
+                <!-- Paleta de bloques REORGANIZADA EN GRID HORIZONTAL -->
+                <div class="blocks-palette">
+                    <!-- Sección Indicadores -->
+                    <div class="palette-section">
+                        <div class="palette-title" data-lang-es="📊 Indicadores" data-lang-en="📊 Indicators">📊 Indicadores</div>
+                        <div class="block indicator" draggable="true" data-type="indicator" data-name="EMA" title="Media Móvil Exponencial">
+                            <span class="block-icon">📈</span> EMA<br><small>Media Exp.</small>
+                        </div>
+                        <div class="block indicator" draggable="true" data-type="indicator" data-name="SMA" title="Media Móvil Simple">
+                            <span class="block-icon">📉</span> SMA<br><small>Media Simple</small>
+                        </div>
+                        <div class="block indicator" draggable="true" data-type="indicator" data-name="RSI" title="Índice de Fuerza Relativa">
+                            <span class="block-icon">⚡</span> RSI<br><small>Fuerza</small>
+                        </div>
+                        <div class="block indicator" draggable="true" data-type="indicator" data-name="MACD" title="MACD">
+                            <span class="block-icon">🌊</span> MACD<br><small>Momentum</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección Más Indicadores -->
+                    <div class="palette-section">
+                        <div class="palette-title" data-lang-es="📐 Más Indicadores" data-lang-en="📐 More Indicators">📐 Más Indicadores</div>
+                        <div class="block indicator" draggable="true" data-type="indicator" data-name="BBands" title="Bandas de Bollinger">
+                            <span class="block-icon">📏</span> Bollinger<br><small>Volatilidad</small>
+                        </div>
+                        <div class="block indicator" draggable="true" data-type="indicator" data-name="ATR" title="Average True Range">
+                            <span class="block-icon">📊</span> ATR<br><small>Rango</small>
+                        </div>
+                        <div class="block indicator" draggable="true" data-type="indicator" data-name="Swing" title="Swing High/Low">
+                            <span class="block-icon">🔄</span> Swing<br><small>Máx/Mín</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección Valores -->
+                    <div class="palette-section">
+                        <div class="palette-title" data-lang-es="💰 Valores" data-lang-en="💰 Values">💰 Valores</div>
+                        <div class="block value" draggable="true" data-type="value" data-name="Price" title="Precio actual">
+                            <span class="block-icon">💵</span> Precio<br><small>Actual</small>
+                        </div>
+                        <div class="block value" draggable="true" data-type="value" data-name="Number" title="Número fijo">
+                            <span class="block-icon">🔢</span> Número<br><small>Fijo</small>
+                        </div>
+                        <div class="block value" draggable="true" data-type="value" data-name="Percentage" title="Porcentaje">
+                            <span class="block-icon">%</span> Porcentaje<br><small>%</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección Operadores -->
+                    <div class="palette-section">
+                        <div class="palette-title" data-lang-es="⚡ Comparadores" data-lang-en="⚡ Comparators">⚡ Comparadores</div>
+                        <div class="block operator" draggable="true" data-type="operator" data-name="GreaterThan" title="Mayor que">
+                            <span class="block-icon">></span> Mayor<br><small>A > B</small>
+                        </div>
+                        <div class="block operator" draggable="true" data-type="operator" data-name="LessThan" title="Menor que">
+                            <span class="block-icon"><</span> Menor<br><small>A < B</small>
+                        </div>
+                        <div class="block operator" draggable="true" data-type="operator" data-name="GreaterOrEqual" title="Mayor o igual">
+                            <span class="block-icon">≥</span> Mayor/Igual<br><small>A ≥ B</small>
+                        </div>
+                        <div class="block operator" draggable="true" data-type="operator" data-name="LessOrEqual" title="Menor o igual">
+                            <span class="block-icon">≤</span> Menor/Igual<br><small>A ≤ B</small>
+                        </div>
+                        <div class="block operator" draggable="true" data-type="operator" data-name="Equal" title="Igual">
+                            <span class="block-icon">=</span> Igual<br><small>A = B</small>
+                        </div>
+                        <div class="block operator" draggable="true" data-type="operator" data-name="NotEqual" title="Diferente">
+                            <span class="block-icon">≠</span> Diferente<br><small>A ≠ B</small>
+                        </div>
+                        <div class="block operator" draggable="true" data-type="operator" data-name="Crosses" title="Cruza">
+                            <span class="block-icon">✖</span> Cruza<br><small>Crossover</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección Lógica -->
+                    <div class="palette-section">
+                        <div class="palette-title" data-lang-es="🎯 Lógica" data-lang-en="🎯 Logic">🎯 Lógica</div>
+                        <div class="block condition" draggable="true" data-type="condition" data-name="AND" title="Y lógico">
+                            <span class="block-icon">∧</span> AND<br><small>A y B</small>
+                        </div>
+                        <div class="block condition" draggable="true" data-type="condition" data-name="OR" title="O lógico">
+                            <span class="block-icon">∨</span> OR<br><small>A o B</small>
+                        </div>
+                        <div class="block condition" draggable="true" data-type="condition" data-name="NOT" title="Negación">
+                            <span class="block-icon">¬</span> NOT<br><small>Niega</small>
+                        </div>
+                        <div class="block condition" draggable="true" data-type="condition" data-name="XOR" title="O exclusivo">
+                            <span class="block-icon">⊕</span> XOR<br><small>Solo uno</small>
+                        </div>
+                        <div class="block condition" draggable="true" data-type="condition" data-name="NAND" title="NAND">
+                            <span class="block-icon">⊼</span> NAND<br><small>NO ambos</small>
+                        </div>
+                        <div class="block condition" draggable="true" data-type="condition" data-name="NOR" title="NOR">
+                            <span class="block-icon">⊽</span> NOR<br><small>Ninguno</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canvas de construcción -->
+                <div class="builder-canvas">
+                    <!-- Zona de entrada LONG -->
+                    <div class="drop-zone" id="entry_long_zone" data-zone="entry_long">
+                        <div class="drop-zone-title">
+                            <span>📈</span>
+                            <span data-lang-es="Condiciones de Entrada LONG" data-lang-en="LONG Entry Conditions">Condiciones de Entrada LONG</span>
+                        </div>
+                        <div class="drop-zone-content">
+                            <div class="drop-zone-empty" data-lang-es="Arrastra bloques aquí para definir cuándo entrar en posición LONG" data-lang-en="Drag blocks here to define when to enter LONG position">
+                                Arrastra bloques aquí para definir cuándo entrar en posición LONG
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zona de salida LONG -->
+                    <div class="drop-zone" id="exit_long_zone" data-zone="exit_long">
+                        <div class="drop-zone-title">
+                            <span>🚪</span>
+                            <span data-lang-es="Condiciones de Salida LONG" data-lang-en="LONG Exit Conditions">Condiciones de Salida LONG</span>
+                        </div>
+                        <div class="drop-zone-content">
+                            <div class="drop-zone-empty" data-lang-es="Arrastra bloques aquí para definir cuándo salir de posición LONG" data-lang-en="Drag blocks here to define when to exit LONG position">
+                                Arrastra bloques aquí para definir cuándo salir de posición LONG
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zona de entrada SHORT -->
+                    <div class="drop-zone" id="entry_short_zone" data-zone="entry_short">
+                        <div class="drop-zone-title">
+                            <span>📉</span>
+                            <span data-lang-es="Condiciones de Entrada SHORT" data-lang-en="SHORT Entry Conditions">Condiciones de Entrada SHORT</span>
+                        </div>
+                        <div class="drop-zone-content">
+                            <div class="drop-zone-empty" data-lang-es="Arrastra bloques aquí para definir cuándo entrar en posición SHORT" data-lang-en="Drag blocks here to define when to enter SHORT position">
+                                Arrastra bloques aquí para definir cuándo entrar en posición SHORT
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zona de salida SHORT -->
+                    <div class="drop-zone" id="exit_short_zone" data-zone="exit_short">
+                        <div class="drop-zone-title">
+                            <span>🚪</span>
+                            <span data-lang-es="Condiciones de Salida SHORT" data-lang-en="SHORT Exit Conditions">Condiciones de Salida SHORT</span>
+                        </div>
+                        <div class="drop-zone-content">
+                            <div class="drop-zone-empty" data-lang-es="Arrastra bloques aquí para definir cuándo salir de posición SHORT" data-lang-en="Drag blocks here to define when to exit SHORT position">
+                                Arrastra bloques aquí para definir cuándo salir de posición SHORT
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="strategy-actions">
+                        <button class="btn btn-secondary" onclick="clearStrategy()" data-lang-es="🗑️ Limpiar Todo" data-lang-en="🗑️ Clear All">🗑️ Limpiar Todo</button>
+                        <button class="btn btn-secondary" onclick="exportStrategy()" data-lang-es="📥 Exportar Estrategia" data-lang-en="📥 Export Strategy">📥 Exportar Estrategia</button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()" data-lang-es="📤 Importar Estrategia" data-lang-en="📤 Import Strategy">📤 Importar Estrategia</button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importStrategy(event)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: EJECUTAR BACKTEST -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-icon">🚀</span>
+                <h2 data-lang-es="3. Ejecutar Backtest" data-lang-en="3. Run Backtest">3. Ejecutar Backtest</h2>
+            </div>
+
+            <p class="info-text" style="margin-bottom: 20px; background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3;">
+                <strong data-lang-es="📥 Descarga Automática:" data-lang-en="📥 Automatic Download:">📥 Descarga Automática:</strong> <span data-lang-es="Los datos se descargarán automáticamente desde Binance cuando ejecutes el backtest. Solo escribe el símbolo del activo." data-lang-en="Data will be downloaded automatically from Binance when you run the backtest. Just enter the asset symbol.">Los datos se descargarán automáticamente desde Binance cuando ejecutes el backtest. Solo escribe el símbolo del activo.</span>
+            </p>
+
+            <div class="grid-2">
+                <div>
+                    <h3 class="section-subtitle" data-lang-es="ℹ️ Información del Backtest" data-lang-en="ℹ️ Backtest Information">ℹ️ Información del Backtest</h3>
+                    <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; border-left: 4px solid #2196f3;">
+                        <p style="margin: 10px 0; line-height: 2;">
+                            <strong data-lang-es="📊 Estrategia Configurada:" data-lang-en="📊 Configured Strategy:">📊 Estrategia Configurada:</strong><br>
+                            <span id="strategy_info" style="color: #666;" data-lang-es="Configura bloques en la sección anterior" data-lang-en="Configure blocks in the previous section">Configura bloques en la sección anterior</span>
+                        </p>
+                        <p style="margin: 15px 0; line-height: 2;">
+                            <strong data-lang-es="🎯 Características del Sistema:" data-lang-en="🎯 System Features:">🎯 Características del Sistema:</strong><br>
+                            <span data-lang-es="✅ Descarga automática desde Binance" data-lang-en="✅ Automatic download from Binance">✅ Descarga automática desde Binance</span><br>
+                            <span data-lang-es="✅ Posiciones LONG y SHORT" data-lang-en="✅ LONG and SHORT positions">✅ Posiciones LONG y SHORT</span><br>
+                            <span data-lang-es="✅ Trading fraccionario ajustable" data-lang-en="✅ Adjustable fractional trading">✅ Trading fraccionario ajustable</span><br>
+                            <span data-lang-es="✅ Comisiones realistas incluidas" data-lang-en="✅ Realistic commissions included">✅ Comisiones realistas incluidas</span><br>
+                            <span data-lang-es="✅ Gráficos interactivos Bokeh" data-lang-en="✅ Interactive Bokeh charts">✅ Gráficos interactivos Bokeh</span><br>
+                            <span data-lang-es="✅ Métricas detalladas de rendimiento" data-lang-en="✅ Detailed performance metrics">✅ Métricas detalladas de rendimiento</span>
+                        </p>
+                        <p style="margin: 15px 0; line-height: 2;">
+                            <strong data-lang-es="⚠️ Validaciones:" data-lang-en="⚠️ Validations:">⚠️ Validaciones:</strong><br>
+                            <span data-lang-es="• Datos mínimos: 50 velas" data-lang-en="• Minimum data: 50 candles">• Datos mínimos: 50 velas</span><br>
+                            <span data-lang-es="• Máximo: 100,000 requests de seguridad" data-lang-en="• Maximum: 100,000 safety requests">• Máximo: 100,000 requests de seguridad</span><br>
+                            <span data-lang-es="• Símbolos soportados: Binance exchange" data-lang-en="• Supported symbols: Binance exchange">• Símbolos soportados: Binance exchange</span><br>
+                            <span data-lang-es="• Pares: USDT, USDC, BUSD" data-lang-en="• Pairs: USDT, USDC, BUSD">• Pares: USDT, USDC, BUSD</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <form id="backtestForm">
+                        <div class="form-group">
+                            <label for="bt_symbol" data-lang-es="Símbolo del Activo" data-lang-en="Asset Symbol">Símbolo del Activo</label>
+                            <input type="text" id="bt_symbol" name="symbol" data-placeholder-es="Escribe el símbolo (ej: BTC, ETH, SOL)" data-placeholder-en="Enter symbol (e.g. BTC, ETH, SOL)" placeholder="Escribe el símbolo (ej: BTC, ETH, SOL)" required>
+                            <small data-lang-es="Introduce solo el símbolo base del activo" data-lang-en="Enter only the base asset symbol">Introduce solo el símbolo base del activo</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bt_pair" data-lang-es="Par de Trading" data-lang-en="Trading Pair">Par de Trading</label>
+                            <select id="bt_pair" name="pair">
+                                <option value="USDT">USDT (Tether)</option>
+                                <option value="USDC">USDC (USD Coin)</option>
+                                <option value="BUSD">BUSD (Binance USD)</option>
+                            </select>
+                            <small data-lang-es="Selecciona la moneda contra la que se tradea" data-lang-en="Select the currency to trade against">Selecciona la moneda contra la que se tradea</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bt_timeframe" data-lang-es="Temporalidad" data-lang-en="Timeframe">Temporalidad</label>
+                            <select id="bt_timeframe" name="timeframe">
+                                <option value="1m" data-lang-es="1 minuto" data-lang-en="1 minute">1 minuto</option>
+                                <option value="5m" data-lang-es="5 minutos" data-lang-en="5 minutes">5 minutos</option>
+                                <option value="15m" data-lang-es="15 minutos" data-lang-en="15 minutes">15 minutos</option>
+                                <option value="30m" data-lang-es="30 minutos" data-lang-en="30 minutes">30 minutos</option>
+                                <option value="1h" selected data-lang-es="1 hora" data-lang-en="1 hour">1 hora</option>
+                                <option value="2h" data-lang-es="2 horas" data-lang-en="2 hours">2 horas</option>
+                                <option value="4h" data-lang-es="4 horas" data-lang-en="4 hours">4 horas</option>
+                                <option value="1d" data-lang-es="1 día" data-lang-en="1 day">1 día</option>
+                                <option value="1w" data-lang-es="1 semana" data-lang-en="1 week">1 semana</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bt_start_date" data-lang-es="Fecha Inicio" data-lang-en="Start Date">Fecha Inicio</label>
+                            <input type="date" id="bt_start_date" value="2020-01-01">
+                            <small data-lang-es="Descargará datos históricos desde esta fecha" data-lang-en="Will download historical data from this date">Descargará datos históricos desde esta fecha</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="position_size" data-lang-es="Position Size" data-lang-en="Position Size">Position Size</label>
+                            <input type="number" id="position_size" value="0.2" min="0.01" max="1" step="0.01">
+                            <small data-lang-es="Fracción del capital por trade (0.2 = 20%)" data-lang-en="Fraction of capital per trade (0.2 = 20%)">Fracción del capital por trade (0.2 = 20%)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cash" data-lang-es="Capital Inicial ($)" data-lang-en="Initial Capital ($)">Capital Inicial ($)</label>
+                            <input type="number" id="cash" value="1000" min="100" step="100">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="commission" data-lang-es="Comisión (%)" data-lang-en="Commission (%)">Comisión (%)</label>
+                            <input type="number" id="commission" value="0.4" min="0" max="5" step="0.1">
+                            <small data-lang-es="Comisión por operación" data-lang-en="Commission per operation">Comisión por operación</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-lang-es="Finalizar Trades Abiertos" data-lang-en="Finalize Open Trades">Finalizar Trades Abiertos</label>
+                            <div class="radio-group">
+                                <label>
+                                    <input type="radio" name="finalize_trades" value="yes" checked>
+                                    <span data-lang-es="Sí" data-lang-en="Yes">Sí</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="finalize_trades" value="no">
+                                    <span data-lang-es="No" data-lang-en="No">No</span>
+                                </label>
+                            </div>
+                            <small data-lang-es="Cerrar operaciones abiertas al final del backtest" data-lang-en="Close open operations at the end of backtest">Cerrar operaciones abiertas al final del backtest</small>
+                        </div>
+
+                        <button type="submit" class="btn" data-lang-es="🚀 Ejecutar Backtest" data-lang-en="🚀 Run Backtest">🚀 Ejecutar Backtest</button>
+                        
+                        <div style="margin-top: 15px;">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('importBacktestFile').click()" data-lang-es="📤 Importar Resultado" data-lang-en="📤 Import Result" style="width: 100%;">📤 Importar Resultado</button>
+                            <input type="file" id="importBacktestFile" accept=".json" style="display: none;" onchange="importBacktestResult(event)">
+                        </div>
+                    </form>
+
+                    <div class="loading" id="bt_loading">
+                        <div class="spinner"></div>
+                        <p id="bt_loading_text" data-lang-es="Ejecutando backtest..." data-lang-en="Running backtest...">Ejecutando backtest...</p>
+                        <div class="progress-bar-container" style="width: 300px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; margin: 15px auto; overflow: hidden;">
+                            <div id="bt_progress_bar" class="progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); transition: width 0.3s ease;"></div>
+                        </div>
+                        <p id="bt_loading_status" style="font-size: 0.9em; opacity: 0.8; margin-top: 10px;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: RESULTADOS -->
+        <div class="section result-box" id="results_section">
+            <div class="section-header">
+                <span class="section-icon">📊</span>
+                <h2 data-lang-es="Resultados del Backtest" data-lang-en="Backtest Results">Resultados del Backtest</h2>
+            </div>
+
+            <div id="stats_container"></div>
+            
+            <div style="margin-top: 30px;" id="chart_container"></div>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <button type="button" id="exportBacktestBtn" class="btn btn-secondary" onclick="exportBacktestResult()" data-lang-es="📥 Exportar Resultado" data-lang-en="📥 Export Result" style="display: none;">📥 Exportar Resultado</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Disclaimer de Backtest -->
+    <div id="disclaimerModal" class="disclaimer-modal">
+        <div class="disclaimer-content">
+            <div class="disclaimer-header">
+                <span class="disclaimer-icon">⚠️</span>
+                <h3 data-lang-es="AVISO IMPORTANTE SOBRE BACKTESTING" data-lang-en="IMPORTANT BACKTEST DISCLAIMER">AVISO IMPORTANTE SOBRE BACKTESTING</h3>
+            </div>
+            
+            <div class="disclaimer-text">
+                <p data-lang-es="Antes de ejecutar el backtest, es fundamental que comprenda las siguientes consideraciones:" 
+                   data-lang-en="Before running the backtest, it is essential that you understand the following considerations:">
+                    Antes de ejecutar el backtest, es fundamental que comprenda las siguientes consideraciones:
+                </p>
+                
+                <ul class="disclaimer-list">
+                    <li data-lang-es="Los resultados pasados NO garantizan rendimientos futuros" 
+                        data-lang-en="Past results DO NOT guarantee future returns">
+                        <strong>Los resultados pasados NO garantizan rendimientos futuros</strong>
+                    </li>
+                    <li data-lang-es="El backtesting utiliza datos históricos que pueden no reflejar condiciones futuras del mercado" 
+                        data-lang-en="Backtesting uses historical data that may not reflect future market conditions">
+                        El backtesting utiliza datos históricos que pueden no reflejar condiciones futuras del mercado
+                    </li>
+                    <li data-lang-es="Los costos de transacción, slippage y liquidez real pueden afectar significativamente los resultados" 
+                        data-lang-en="Transaction costs, slippage, and actual liquidity can significantly affect results">
+                        Los costos de transacción, slippage y liquidez real pueden afectar significativamente los resultados
+                    </li>
+                    <li data-lang-es="El sobreajuste (overfitting) de parámetros puede generar resultados engañosos" 
+                        data-lang-en="Parameter overfitting can generate misleading results">
+                        El sobreajuste (overfitting) de parámetros puede generar resultados engañosos
+                    </li>
+                    <li data-lang-es="Este backtest es solo una herramienta educativa y de investigación" 
+                        data-lang-en="This backtest is only an educational and research tool">
+                        Este backtest es solo una herramienta educativa y de investigación
+                    </li>
+                    <li data-lang-es="NO debe tomarse como asesoramiento financiero o de inversión" 
+                        data-lang-en="It should NOT be taken as financial or investment advice">
+                        <strong>NO debe tomarse como asesoramiento financiero o de inversión</strong>
+                    </li>
+                </ul>
+
+                <p data-lang-es="Siempre realice su propia investigación y consulte con profesionales antes de tomar decisiones de inversión." 
+                   data-lang-en="Always do your own research and consult with professionals before making investment decisions.">
+                    <strong>Siempre realice su propia investigación y consulte con profesionales antes de tomar decisiones de inversión.</strong>
+                </p>
+            </div>
+
+            <div class="disclaimer-checkbox">
+                <input type="checkbox" id="disclaimerCheckbox">
+                <label for="disclaimerCheckbox">
+                    <span data-lang-es="He leído y comprendo completamente las limitaciones del backtesting" 
+                          data-lang-en="I have read and fully understand the limitations of backtesting">
+                        He leído y comprendo completamente las limitaciones del backtesting
+                    </span>
+                </label>
+            </div>
+
+            <div class="disclaimer-buttons">
+                <button id="cancelDisclaimerBtn" class="disclaimer-btn disclaimer-btn-cancel" 
+                        data-lang-es="Cancelar" data-lang-en="Cancel">Cancelar</button>
+                <button id="acceptDisclaimerBtn" class="disclaimer-btn disclaimer-btn-accept" disabled
+                        data-lang-es="Aceptar y Continuar" data-lang-en="Accept and Continue">Aceptar y Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== STRATEGY BUILDER ====================
+        
+        let strategyConfig = {
+            entry_long: [],
+            exit_long: [],
+            entry_short: [],
+            exit_short: []
+        };
+
+        let blockCounter = 0;
+
+        // Configuración del drag and drop
+        document.addEventListener('DOMContentLoaded', function() {
+            initStrategyBuilder();
+            updateStrategyInfo();
+        });
+
+        function initStrategyBuilder() {
+            // Hacer bloques arrastrables
+            const blocks = document.querySelectorAll('.block[draggable="true"]');
+            blocks.forEach(block => {
+                block.addEventListener('dragstart', handleDragStart);
+                block.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Configurar zonas de drop
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+            });
+        }
+
+        function updateStrategyInfo() {
+            const totalBlocks = document.querySelectorAll('.dropped-block').length;
+            const infoElement = document.getElementById('strategy_info');
+            const lang = localStorage.getItem('language') || 'en';
+            
+            if (totalBlocks === 0) {
+                infoElement.innerHTML = lang === 'es' 
+                    ? '❌ No configurada - Arrastra bloques en Sección 2'
+                    : '❌ Not configured - Drag blocks in Section 2';
+                infoElement.style.color = '#ff6b6b';
+            } else {
+                const zones = {
+                    entry_long: document.querySelectorAll('[data-zone="entry_long"] .dropped-block').length,
+                    exit_long: document.querySelectorAll('[data-zone="exit_long"] .dropped-block').length,
+                    entry_short: document.querySelectorAll('[data-zone="entry_short"] .dropped-block').length,
+                    exit_short: document.querySelectorAll('[data-zone="exit_short"] .dropped-block').length
+                };
+                
+                // Traducir estrategia a lenguaje humano
+                const strategyText = translateStrategyToHuman(lang);
+                
+                if (lang === 'es') {
+                    infoElement.innerHTML = `
+                        ✅ Configurada con ${totalBlocks} bloques<br>
+                        <small style="opacity: 0.8;">
+                            Entrada LONG: ${zones.entry_long} | Salida LONG: ${zones.exit_long}<br>
+                            Entrada SHORT: ${zones.entry_short} | Salida SHORT: ${zones.exit_short}
+                        </small>
+                        ${strategyText ? '<br><br>' + strategyText : ''}
+                    `;
+                } else {
+                    infoElement.innerHTML = `
+                        ✅ Configured with ${totalBlocks} blocks<br>
+                        <small style="opacity: 0.8;">
+                            LONG Entry: ${zones.entry_long} | LONG Exit: ${zones.exit_long}<br>
+                            SHORT Entry: ${zones.entry_short} | SHORT Exit: ${zones.exit_short}
+                        </small>
+                        ${strategyText ? '<br><br>' + strategyText : ''}
+                    `;
+                }
+                infoElement.style.color = '#4caf50';
+            }
+        }
+        
+        function translateStrategyToHuman(lang) {
+            const zones = [
+                { id: 'entry_long_zone', label: lang === 'es' ? '📈 Entrada LONG' : '📈 LONG Entry' },
+                { id: 'exit_long_zone', label: lang === 'es' ? '🚪 Salida LONG' : '🚪 LONG Exit' },
+                { id: 'entry_short_zone', label: lang === 'es' ? '📉 Entrada SHORT' : '📉 SHORT Entry' },
+                { id: 'exit_short_zone', label: lang === 'es' ? '🔚 Salida SHORT' : '🔚 SHORT Exit' }
+            ];
+            
+            let html = '<div style="margin-top: 10px; padding: 10px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)); border-radius: 6px; border-left: 3px solid #667eea;">';
+            html += `<strong style="color: #764ba2;">${lang === 'es' ? '🔍 Traducción de Estrategia:' : '🔍 Strategy Translation:'}</strong><br>`;
+            
+            let hasConditions = false;
+            zones.forEach(zone => {
+                const zoneElement = document.getElementById(zone.id);
+                if (!zoneElement) return;
+                
+                const blocks = zoneElement.querySelectorAll('.dropped-block');
+                if (blocks.length === 0) return;
+                
+                hasConditions = true;
+                html += `<br><strong style="color: #667eea;">${zone.label}:</strong><br>`;
+                
+                blocks.forEach((block, index) => {
+                    const blockName = block.dataset.name;
+                    const blockType = block.dataset.type;
+                    const description = getBlockDescription(blockName, blockType, block, lang);
+                    html += `${index + 1}. ${description}<br>`;
+                });
+            });
+            
+            html += '</div>';
+            return hasConditions ? html : '';
+        }
+        
+        function getBlockDescription(name, type, blockElement, lang) {
+            const translations = {
+                es: {
+                    EMA: 'Media Móvil Exponencial',
+                    SMA: 'Media Móvil Simple',
+                    RSI: 'Índice de Fuerza Relativa',
+                    MACD: 'MACD (Convergencia/Divergencia)',
+                    BBands: 'Bandas de Bollinger',
+                    ATR: 'Rango Verdadero Promedio',
+                    Swing: 'Swing High/Low',
+                    Price: 'Precio actual',
+                    Number: 'Número',
+                    Percentage: 'Porcentaje',
+                    GreaterThan: 'Mayor que',
+                    LessThan: 'Menor que',
+                    GreaterOrEqual: 'Mayor o igual que',
+                    LessOrEqual: 'Menor o igual que',
+                    Equal: 'Igual a',
+                    NotEqual: 'Diferente de',
+                    Crosses: 'Cruza',
+                    AND: 'Y (ambas condiciones)',
+                    OR: 'O (cualquiera)',
+                    NOT: 'NO (niega condición)',
+                    XOR: 'XOR (solo una)',
+                    NAND: 'NAND (no ambas)',
+                    NOR: 'NOR (ninguna)'
+                },
+                en: {
+                    EMA: 'Exponential Moving Average',
+                    SMA: 'Simple Moving Average',
+                    RSI: 'Relative Strength Index',
+                    MACD: 'MACD (Convergence/Divergence)',
+                    BBands: 'Bollinger Bands',
+                    ATR: 'Average True Range',
+                    Swing: 'Swing High/Low',
+                    Price: 'Current price',
+                    Number: 'Number',
+                    Percentage: 'Percentage',
+                    GreaterThan: 'Greater than',
+                    LessThan: 'Less than',
+                    GreaterOrEqual: 'Greater or equal to',
+                    LessOrEqual: 'Less or equal to',
+                    Equal: 'Equal to',
+                    NotEqual: 'Different from',
+                    Crosses: 'Crosses',
+                    AND: 'AND (both conditions)',
+                    OR: 'OR (any condition)',
+                    NOT: 'NOT (negates condition)',
+                    XOR: 'XOR (only one)',
+                    NAND: 'NAND (not both)',
+                    NOR: 'NOR (neither)'
+                }
+            };
+            
+            const dict = translations[lang];
+            let desc = dict[name] || name;
+            
+            // Agregar parámetros si existen
+            const inputs = blockElement.querySelectorAll('input, select');
+            if (inputs.length > 0) {
+                const params = [];
+                inputs.forEach(input => {
+                    if (input.value) {
+                        params.push(input.value);
+                    }
+                });
+                if (params.length > 0) {
+                    desc += ` (${params.join(', ')})`;
+                }
+            }
+            
+            return desc;
+        }
+
+        function handleDragStart(e) {
+            e.dataTransfer.effectAllowed = 'copy';
+            e.dataTransfer.setData('text/plain', JSON.stringify({
+                type: this.dataset.type,
+                name: this.dataset.name,
+                html: this.outerHTML
+            }));
+            
+            // Ocultar paleta después de un pequeño delay
+            setTimeout(() => {
+                document.querySelector('.blocks-palette').classList.add('dragging');
+                document.querySelector('.builder-canvas').classList.add('dragging-active');
+                
+                // Hacer scroll al canvas para que las cajas sean visibles
+                const canvas = document.querySelector('.builder-canvas');
+                if (canvas) {
+                    canvas.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 50);
+        }
+        
+        function handleDragEnd(e) {
+            // Mostrar paleta nuevamente
+            document.querySelector('.blocks-palette').classList.remove('dragging');
+            document.querySelector('.builder-canvas').classList.remove('dragging-active');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+            const zone = this.dataset.zone;
+            
+            addBlockToZone(zone, data);
+        }
+
+        function addBlockToZone(zone, blockData) {
+            const zoneElement = document.querySelector(`[data-zone="${zone}"]`);
+            const contentElement = zoneElement.querySelector('.drop-zone-content');
+            
+            // Remover mensaje vacío
+            const emptyMsg = contentElement.querySelector('.drop-zone-empty');
+            if (emptyMsg) {
+                emptyMsg.remove();
+            }
+            
+            const blockId = `block_${blockCounter++}`;
+            
+            // Crear el bloque dropped
+            const droppedBlock = document.createElement('div');
+            droppedBlock.className = 'dropped-block';
+            droppedBlock.dataset.blockId = blockId;
+            droppedBlock.dataset.type = blockData.type;
+            droppedBlock.dataset.name = blockData.name;
+            
+            let paramsHtml = '';
+            
+            // Generar inputs según el tipo de bloque
+            if (blockData.name === 'EMA' || blockData.name === 'SMA') {
+                paramsHtml = `
+                    <div class="block-params">
+                        <div class="param-group">
+                            <label>Período</label>
+                            <input type="number" id="${blockId}_period" value="50" min="1" max="200" step="1">
+                        </div>
+                    </div>
+                `;
+            } else if (blockData.name === 'RSI') {
+                paramsHtml = `
+                    <div class="block-params">
+                        <div class="param-group">
+                            <label>Período</label>
+                            <input type="number" id="${blockId}_period" value="14" min="2" max="50" step="1">
+                        </div>
+                    </div>
+                `;
+            } else if (blockData.name === 'MACD') {
+                paramsHtml = `
+                    <div class="block-params">
+                        <div class="param-group">
+                            <label>Rápido</label>
+                            <input type="number" id="${blockId}_fast" value="12" min="2" max="50" step="1">
+                        </div>
+                        <div class="param-group">
+                            <label>Lento</label>
+                            <input type="number" id="${blockId}_slow" value="26" min="2" max="100" step="1">
+                        </div>
+                        <div class="param-group">
+                            <label>Señal</label>
+                            <input type="number" id="${blockId}_signal" value="9" min="2" max="50" step="1">
+                        </div>
+                    </div>
+                `;
+            } else if (blockData.name === 'BBands') {
+                paramsHtml = `
+                    <div class="block-params">
+                        <div class="param-group">
+                            <label>Período</label>
+                            <input type="number" id="${blockId}_period" value="20" min="5" max="100" step="1">
+                        </div>
+                        <div class="param-group">
+                            <label>Desv. Std</label>
+                            <input type="number" id="${blockId}_std" value="2" min="0.5" max="5" step="0.1">
+                        </div>
+                        <div class="param-group">
+                            <label>Banda</label>
+                            <select id="${blockId}_band">
+                                <option value="upper">Superior</option>
+                                <option value="middle">Media</option>
+                                <option value="lower">Inferior</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+            } else if (blockData.name === 'ATR') {
+                paramsHtml = `
+                    <div class="block-params">
+                        <div class="param-group">
+                            <label>Período</label>
+                            <input type="number" id="${blockId}_period" value="14" min="2" max="100" step="1">
+                        </div>
+                    </div>
+                `;
+            } else if (blockData.name === 'Swing') {
+                paramsHtml = `
+                    <div class="block-params">
+                        <div class="param-group">
+                            <label>Tipo</label>
+                            <select id="${blockId}_type">
+                                <option value="high">High</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                        <div class="param-group">
+                            <label>Lookback</label>
+                            <input type="number" id="${blockId}_lookback" value="20" min="5" max="100" step="1">
+                        </div>
+                    </div>
+                `;
+            } else if (blockData.name === 'Number') {
+                paramsHtml = `
+                    <div class="block-params">
+                        <div class="param-group">
+                            <label>Valor</label>
+                            <input type="number" id="${blockId}_value" value="0" step="0.01">
+                        </div>
+                    </div>
+                `;
+            } else if (blockData.name === 'Percentage') {
+                paramsHtml = `
+                    <div class="block-params">
+                        <div class="param-group">
+                            <label>Porcentaje (%)</label>
+                            <input type="number" id="${blockId}_value" value="1" min="0" max="100" step="0.1">
+                        </div>
+                    </div>
+                `;
+            } else if (blockData.name === 'GreaterThan' || blockData.name === 'LessThan' || blockData.name === 'GreaterOrEqual' || blockData.name === 'LessOrEqual' || blockData.name === 'Equal' || blockData.name === 'NotEqual' || blockData.name === 'Crosses') {
+                const symbol = blockData.name === 'GreaterThan' ? '>' : 
+                             blockData.name === 'LessThan' ? '<' : 
+                             blockData.name === 'GreaterOrEqual' ? '≥' : 
+                             blockData.name === 'LessOrEqual' ? '≤' : 
+                             blockData.name === 'Equal' ? '=' : 
+                             blockData.name === 'NotEqual' ? '≠' : '✖';
+                paramsHtml = `
+                    <div class="block-params">
+                        <div class="param-group">
+                            <label>Comparar</label>
+                            <div style="display: flex; gap: 5px; align-items: center;">
+                                <input type="text" id="${blockId}_left" placeholder="ej: price, ema50" style="flex: 1;">
+                                <span style="font-weight: bold;">${symbol}</span>
+                                <input type="text" id="${blockId}_right" placeholder="ej: ema50, swing" style="flex: 1;">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            droppedBlock.innerHTML = `
+                <div class="dropped-block-header">
+                    <div class="dropped-block-title">
+                        ${getBlockIcon(blockData.name)}
+                        <span>${getBlockLabel(blockData.name)}</span>
+                    </div>
+                    <div class="block-actions">
+                        <button class="move-block" onclick="moveBlockUp('${blockId}', '${zone}')" title="Mover arriba">▲</button>
+                        <button class="move-block" onclick="moveBlockDown('${blockId}', '${zone}')" title="Mover abajo">▼</button>
+                        <button class="remove-block" onclick="removeBlock('${blockId}', '${zone}')">✕</button>
+                    </div>
+                </div>
+                ${paramsHtml}
+            `;
+            
+            contentElement.appendChild(droppedBlock);
+            
+            // Guardar en configuración
+            strategyConfig[zone].push({
+                id: blockId,
+                type: blockData.type,
+                name: blockData.name
+            });
+            
+            // Actualizar botones de movimiento
+            updateMoveButtons(zone);
+            
+            // Actualizar información de estrategia
+            updateStrategyInfo();
+        }
+
+        function removeBlock(blockId, zone) {
+            const block = document.querySelector(`[data-block-id="${blockId}"]`);
+            if (block) {
+                block.remove();
+            }
+            
+            // Remover de configuración
+            strategyConfig[zone] = strategyConfig[zone].filter(b => b.id !== blockId);
+            
+            // Si la zona quedó vacía, mostrar mensaje
+            const zoneElement = document.querySelector(`[data-zone="${zone}"]`);
+            const contentElement = zoneElement.querySelector('.drop-zone-content');
+            if (contentElement.children.length === 0) {
+                const lang = localStorage.getItem('language') || 'en';
+                const msg = lang === 'es' ? 'Arrastra bloques aquí' : 'Drag blocks here';
+                contentElement.innerHTML = `<div class="drop-zone-empty">${msg}</div>`;
+            } else {
+                // Actualizar botones de movimiento
+                updateMoveButtons(zone);
+            }
+            
+            // Actualizar información de estrategia
+            updateStrategyInfo();
+        }
+
+        function moveBlockUp(blockId, zone) {
+            const zoneElement = document.querySelector(`[data-zone="${zone}"]`);
+            const contentElement = zoneElement.querySelector('.drop-zone-content');
+            const blocks = Array.from(contentElement.querySelectorAll('.dropped-block'));
+            const blockElement = document.querySelector(`[data-block-id="${blockId}"]`);
+            const currentIndex = blocks.indexOf(blockElement);
+            
+            if (currentIndex > 0) {
+                // Intercambiar con el bloque anterior
+                const previousBlock = blocks[currentIndex - 1];
+                contentElement.insertBefore(blockElement, previousBlock);
+                
+                // Actualizar configuración
+                const temp = strategyConfig[zone][currentIndex];
+                strategyConfig[zone][currentIndex] = strategyConfig[zone][currentIndex - 1];
+                strategyConfig[zone][currentIndex - 1] = temp;
+                
+                // Actualizar botones de movimiento
+                updateMoveButtons(zone);
+                updateStrategyInfo();
+            }
+        }
+
+        function moveBlockDown(blockId, zone) {
+            const zoneElement = document.querySelector(`[data-zone="${zone}"]`);
+            const contentElement = zoneElement.querySelector('.drop-zone-content');
+            const blocks = Array.from(contentElement.querySelectorAll('.dropped-block'));
+            const blockElement = document.querySelector(`[data-block-id="${blockId}"]`);
+            const currentIndex = blocks.indexOf(blockElement);
+            
+            if (currentIndex < blocks.length - 1) {
+                // Intercambiar con el bloque siguiente
+                const nextBlock = blocks[currentIndex + 1];
+                contentElement.insertBefore(nextBlock, blockElement);
+                
+                // Actualizar configuración
+                const temp = strategyConfig[zone][currentIndex];
+                strategyConfig[zone][currentIndex] = strategyConfig[zone][currentIndex + 1];
+                strategyConfig[zone][currentIndex + 1] = temp;
+                
+                // Actualizar botones de movimiento
+                updateMoveButtons(zone);
+                updateStrategyInfo();
+            }
+        }
+
+        function updateMoveButtons(zone) {
+            const zoneElement = document.querySelector(`[data-zone="${zone}"]`);
+            const contentElement = zoneElement.querySelector('.drop-zone-content');
+            const blocks = Array.from(contentElement.querySelectorAll('.dropped-block'));
+            
+            blocks.forEach((block, index) => {
+                const upButton = block.querySelector('.move-block:nth-of-type(1)');
+                const downButton = block.querySelector('.move-block:nth-of-type(2)');
+                
+                if (upButton) {
+                    upButton.disabled = (index === 0);
+                }
+                if (downButton) {
+                    downButton.disabled = (index === blocks.length - 1);
+                }
+            });
+        }
+
+        function clearStrategy() {
+            const lang = localStorage.getItem('language') || 'en';
+            const confirmMsg = lang === 'es' 
+                ? '¿Estás seguro de limpiar toda la estrategia?' 
+                : 'Are you sure you want to clear the entire strategy?';
+            
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+            
+            strategyConfig = {
+                entry_long: [],
+                exit_long: [],
+                entry_short: [],
+                exit_short: []
+            };
+            
+            const msg = lang === 'es' ? 'Arrastra bloques aquí' : 'Drag blocks here';
+            document.querySelectorAll('.drop-zone-content').forEach(content => {
+                content.innerHTML = `<div class="drop-zone-empty">${msg}</div>`;
+            });
+            
+            // Actualizar información de estrategia
+            updateStrategyInfo();
+        }
+
+        function loadDefaultStrategy() {
+            clearStrategy();
+            
+            const lang = localStorage.getItem('language') || 'en';
+            const msg = lang === 'es'
+                ? 'Usa el constructor visual para crear tu estrategia.\n\nEjemplo:\n- Arrastra "Precio" y "EMA" a las zonas\n- Usa el operador "Mayor que (>)" para compararlos\n- Configura los parámetros según tus necesidades'
+                : 'Use the visual builder to create your strategy.\n\nExample:\n- Drag "Price" and "EMA" to the zones\n- Use the "Greater than (>)" operator to compare them\n- Configure parameters according to your needs';
+            
+            alert(msg);
+        }
+
+        function showGuide() {
+            const lang = localStorage.getItem('language') || 'en';
+            
+            const guide = lang === 'es' ? `
+🎯 GUÍA DE USO - VISUAL STRATEGY BUILDER
+
+📦 INDICADORES:
+• EMA/SMA: Medias móviles
+• RSI: Fuerza relativa (14 típico)
+• MACD: Convergencia/Divergencia
+• Bollinger: Bandas de volatilidad
+• ATR: Rango verdadero
+• Swing: Máximos/Mínimos locales
+
+💰 VALORES:
+• Precio: Precio actual
+• Número: Valor fijo
+• Porcentaje: Valores en %
+
+⚡ OPERADORES:
+• > < >= <= == !=: Comparaciones
+• Cruza (✖): Detecta cruces
+
+🎯 LÓGICA:
+• AND/OR: Combina condiciones
+• NOT/XOR/NAND/NOR: Lógica avanzada
+
+📝 EJEMPLO:
+1. Arrastra "Precio" a "Entrada LONG"
+2. Arrastra ">" (Mayor que)
+3. Arrastra "EMA" → configura 50
+
+💡 TIP: Los datos se descargan automáticamente!
+
+⚠️ AVISO IMPORTANTE SOBRE BACKTESTING:
+Los resultados del backtest se basan ÚNICAMENTE en datos históricos del pasado. Un backtest NO es:
+• ❌ Un oráculo o máquina predictora del futuro
+• ❌ Una garantía de rendimiento futuro
+• ❌ Asesoramiento financiero profesional
+
+El mercado es dinámico y puede comportarse diferente en el futuro. Los resultados pasados NO garantizan resultados futuros. Use esta herramienta solo con fines educativos y de prueba.
+            ` : `
+🎯 USER GUIDE - VISUAL STRATEGY BUILDER
+
+📦 INDICATORS:
+• EMA/SMA: Moving averages
+• RSI: Relative strength (typical 14)
+• MACD: Convergence/Divergence
+• Bollinger: Volatility bands
+• ATR: Average True Range
+• Swing: Local highs/lows
+
+💰 VALUES:
+• Price: Current price
+• Number: Fixed value
+• Percentage: Percentage values
+
+⚡ OPERATORS:
+• > < >= <= == !=: Comparisons
+• Crosses (✖): Detects crossovers
+
+🎯 LOGIC:
+• AND/OR: Combine conditions
+• NOT/XOR/NAND/NOR: Advanced logic
+
+📝 EXAMPLE:
+1. Drag "Price" to "LONG Entry"
+2. Drag ">" (Greater than)
+3. Drag "EMA" → set to 50
+
+💡 TIP: Data downloads automatically!
+
+⚠️ IMPORTANT BACKTEST DISCLAIMER:
+Backtest results are based ONLY on historical past data. A backtest is NOT:
+• ❌ An oracle or future prediction machine
+• ❌ A guarantee of future performance
+• ❌ Professional financial advice
+
+Markets are dynamic and may behave differently in the future. Past results do NOT guarantee future results. Use this tool for educational and testing purposes only.
+            `;
+            
+            alert(guide);
+        }
+        
+        // ==================== EXPORT/IMPORT STRATEGY ====================
+        
+        function exportStrategy() {
+            const lang = localStorage.getItem('language') || 'en';
+            
+            // Recolectar todos los bloques de cada zona
+            const strategy = {
+                version: "2.2",
+                timestamp: new Date().toISOString(),
+                entry_long: extractBlocksFromZone('entry_long_zone'),
+                exit_long: extractBlocksFromZone('exit_long_zone'),
+                entry_short: extractBlocksFromZone('entry_short_zone'),
+                exit_short: extractBlocksFromZone('exit_short_zone')
+            };
+            
+            // Validar que hay al menos una estrategia
+            const hasBlocks = strategy.entry_long.length > 0 || 
+                             strategy.exit_long.length > 0 || 
+                             strategy.entry_short.length > 0 || 
+                             strategy.exit_short.length > 0;
+            
+            if (!hasBlocks) {
+                const msg = lang === 'es' 
+                    ? 'No hay estrategia para exportar. Arrastra bloques primero.'
+                    : 'No strategy to export. Drag blocks first.';
+                alert(msg);
+                return;
+            }
+            
+            // Crear archivo JSON
+            const dataStr = JSON.stringify(strategy, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            // Descargar archivo
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `strategy_${new Date().getTime()}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            const successMsg = lang === 'es'
+                ? '✅ Estrategia exportada exitosamente!'
+                : '✅ Strategy exported successfully!';
+            alert(successMsg);
+        }
+        
+        function extractBlocksFromZone(zoneId) {
+            const zone = document.getElementById(zoneId);
+            if (!zone) {
+                console.warn(`Zone not found: ${zoneId}`);
+                return [];
+            }
+            
+            const blocks = [];
+            const blockElements = zone.querySelectorAll('.dropped-block');
+            
+            blockElements.forEach(block => {
+                const blockData = {
+                    type: block.dataset.type,
+                    name: block.dataset.name,
+                    params: {}
+                };
+                
+                // Extraer valores de parámetros
+                const inputs = block.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (input.id) {
+                        blockData.params[input.id] = input.value;
+                    }
+                });
+                
+                blocks.push(blockData);
+            });
+            
+            return blocks;
+        }
+        
+        function importStrategy(event) {
+            const lang = localStorage.getItem('language') || 'en';
+            const file = event.target.files[0];
+            
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const strategy = JSON.parse(e.target.result);
+                
+                // Validar estructura básica
+                if (!strategy.version || !strategy.entry_long) {
+                    const errorMsg = lang === 'es'
+                        ? '❌ Error al importar estrategia. Verifica que el archivo sea válido.'
+                        : '❌ Error importing strategy. Verify the file is valid.';
+                    alert(errorMsg);
+                    return;
+                }
+                
+                // Limpiar estrategia actual
+                clearStrategyWithoutConfirm();
+                
+                // Cargar bloques en cada zona
+                loadBlocksToZone('entry_long_zone', strategy.entry_long);
+                loadBlocksToZone('exit_long_zone', strategy.exit_long);
+                loadBlocksToZone('entry_short_zone', strategy.entry_short);
+                loadBlocksToZone('exit_short_zone', strategy.exit_short);
+                
+                // Actualizar información de estrategia
+                updateStrategyInfo();
+                
+                const successMsg = lang === 'es'
+                    ? '✅ Estrategia importada exitosamente!'
+                    : '✅ Strategy imported successfully!';
+                alert(successMsg);
+            };
+            
+            reader.readAsText(file);
+            
+            // Reset input para permitir reimportar el mismo archivo
+            event.target.value = '';
+        }
+        
+        function clearStrategyWithoutConfirm() {
+            strategyConfig = {
+                entry_long: [],
+                exit_long: [],
+                exit_short: [],
+                exit_short: []
+            };
+            
+            const lang = localStorage.getItem('language') || 'en';
+            const msg = lang === 'es' ? 'Arrastra bloques aquí' : 'Drag blocks here';
+            document.querySelectorAll('.drop-zone-content').forEach(content => {
+                content.innerHTML = `<div class="drop-zone-empty">${msg}</div>`;
+            });
+            
+            // Actualizar información de estrategia
+            updateStrategyInfo();
+        }
+        
+        function loadBlocksToZone(zoneId, blocks) {
+            if (!blocks || blocks.length === 0) return;
+            
+            const zone = document.getElementById(zoneId);
+            if (!zone) return;
+            
+            const zoneName = zone.dataset.zone;
+            if (!zoneName) return;
+            
+            // Limpiar configuración de esta zona
+            strategyConfig[zoneName] = [];
+            
+            // Agregar cada bloque usando la misma función que cuando se arrastra
+            blocks.forEach((blockData) => {
+                // Recrear el bloque con sus parámetros guardados
+                const blockToAdd = {
+                    type: blockData.type,
+                    name: blockData.name,
+                    params: blockData.params
+                };
+                
+                addBlockToZone(zoneName, blockToAdd);
+                
+                // Ahora actualizar los valores de los parámetros después de crear el bloque
+                if (blockData.params) {
+                    // Obtener el último bloque agregado
+                    const droppedBlocks = zone.querySelectorAll('.dropped-block');
+                    const lastBlock = droppedBlocks[droppedBlocks.length - 1];
+                    
+                    if (lastBlock) {
+                        // Aplicar los valores guardados a los inputs
+                        Object.entries(blockData.params).forEach(([paramId, paramValue]) => {
+                            const input = lastBlock.querySelector(`#${paramId}`);
+                            if (input) {
+                                input.value = paramValue;
+                            } else {
+                                // Si el ID exacto no existe, buscar por el sufijo del parámetro
+                                const paramSuffix = paramId.split('_').pop();
+                                const inputBySuffix = lastBlock.querySelector(`[id$="_${paramSuffix}"]`);
+                                if (inputBySuffix) {
+                                    inputBySuffix.value = paramValue;
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+            
+            // Actualizar botones de movimiento
+            updateMoveButtons(zoneId);
+        }
+        
+        // ==================== BACKTEST RESULT IMPORT/EXPORT ====================
+        
+        let lastBacktestResult = null; // Guardar el último resultado del backtest
+        
+        function exportBacktestResult() {
+            const lang = localStorage.getItem('language') || 'en';
+            
+            if (!lastBacktestResult) {
+                const msg = lang === 'es' 
+                    ? 'No hay resultados de backtest para exportar. Ejecuta un backtest primero.'
+                    : 'No backtest results to export. Run a backtest first.';
+                alert(msg);
+                return;
+            }
+            
+            // Crear archivo JSON con el resultado completo
+            const dataStr = JSON.stringify(lastBacktestResult, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            // Descargar archivo
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            const filename = `backtest_result_${lastBacktestResult.config.symbol}_${new Date().getTime()}.json`;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            const successMsg = lang === 'es'
+                ? '✅ Resultado del backtest exportado exitosamente!'
+                : '✅ Backtest result exported successfully!';
+            alert(successMsg);
+        }
+        
+        function importBacktestResult(event) {
+            const lang = localStorage.getItem('language') || 'en';
+            const file = event.target.files[0];
+            
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const result = JSON.parse(e.target.result);
+                    
+                    // Validar estructura básica del resultado
+                    if (!result || typeof result !== 'object') {
+                        throw new Error('Invalid JSON structure');
+                    }
+                    
+                    // Si tiene stats o config, es válido
+                    if (!result.stats && !result.config) {
+                        throw new Error('Missing stats or config');
+                    }
+                    
+                    // Guardar resultado y mostrar
+                    lastBacktestResult = result;
+                    displayResults(result);
+                    
+                    // Mostrar botón de exportar
+                    const exportBtn = document.getElementById('exportBacktestBtn');
+                    if (exportBtn) {
+                        exportBtn.style.display = 'inline-block';
+                    }
+                    
+                    const successMsg = lang === 'es'
+                        ? '✅ Resultado del backtest importado exitosamente!'
+                        : '✅ Backtest result imported successfully!';
+                    
+                    // Usar setTimeout para mostrar el mensaje después de que se rendericen los resultados
+                    setTimeout(() => {
+                        alert(successMsg);
+                    }, 300);
+                    
+                } catch (error) {
+                    const errorMsg = lang === 'es'
+                        ? '❌ Error al importar resultado. Verifica que el archivo sea válido.'
+                        : '❌ Error importing result. Verify the file is valid.';
+                    alert(errorMsg);
+                    console.error('Import error:', error);
+                }
+            };
+            
+            reader.readAsText(file);
+            
+            // Reset input para permitir reimportar el mismo archivo
+            event.target.value = '';
+        }
+
+        function getBlockIcon(name) {
+            const icons = {
+                'EMA': '📊',
+                'SMA': '📈',
+                'RSI': '⚡',
+                'MACD': '🌊',
+                'BBands': '📏',
+                'ATR': '📊',
+                'Swing': '🔄',
+                'Price': '💵',
+                'Number': '🔢',
+                'Percentage': '📊',
+                'GreaterThan': '>',
+                'LessThan': '<',
+                'GreaterOrEqual': '≥',
+                'LessOrEqual': '≤',
+                'Equal': '=',
+                'NotEqual': '≠',
+                'Crosses': '✖️',
+                'AND': '∧',
+                'OR': '∨',
+                'NOT': '¬',
+                'XOR': '⊕',
+                'NAND': '⊼',
+                'NOR': '⊽'
+            };
+            return icons[name] || '📦';
+        }
+
+        function getBlockLabel(name) {
+            const labels = {
+                'EMA': 'EMA',
+                'SMA': 'SMA',
+                'RSI': 'RSI',
+                'MACD': 'MACD',
+                'BBands': 'Bollinger Bands',
+                'ATR': 'ATR',
+                'Swing': 'Swing',
+                'Price': 'Precio',
+                'Number': 'Número',
+                'Percentage': 'Porcentaje %',
+                'GreaterThan': 'Mayor que (>)',
+                'LessThan': 'Menor que (<)',
+                'GreaterOrEqual': 'Mayor o Igual (≥)',
+                'LessOrEqual': 'Menor o Igual (≤)',
+                'Equal': 'Igual (=)',
+                'NotEqual': 'Diferente (≠)',
+                'Crosses': 'Cruza',
+                'AND': 'Y (AND)',
+                'OR': 'O (OR)',
+                'NOT': 'NO (NOT)',
+                'XOR': 'XOR',
+                'NAND': 'NAND',
+                'NOR': 'NOR'
+            };
+            return labels[name] || name;
+        }
+
+        function getStrategyParams() {
+            // Extraer parámetros de todos los bloques
+            const params = {
+                indicators: [],
+                conditions: {}
+            };
+            
+            // Buscar bloques EMA - solo si existen
+            const emaBlocks = document.querySelectorAll('.dropped-block[data-name="EMA"]');
+            if (emaBlocks.length > 0) {
+                const firstEMA = emaBlocks[0].querySelector('[id$="_period"]');
+                if (firstEMA && firstEMA.value) {
+                    params.ema_period = parseInt(firstEMA.value);
+                }
+            }
+            
+            // Buscar bloques Swing - solo si existen
+            const swingBlocks = document.querySelectorAll('.dropped-block[data-name="Swing"]');
+            if (swingBlocks.length > 0) {
+                const firstSwing = swingBlocks[0].querySelector('[id$="_lookback"]');
+                if (firstSwing && firstSwing.value) {
+                    params.swing_lookback = parseInt(firstSwing.value);
+                }
+            }
+            
+            // Recopilar todos los indicadores configurados
+            document.querySelectorAll('.dropped-block[data-type="indicator"]').forEach(block => {
+                const indicator = {
+                    type: block.dataset.name,
+                    params: {}
+                };
+                
+                // Extraer parámetros específicos
+                block.querySelectorAll('input, select').forEach(input => {
+                    const paramName = input.id.split('_').pop();
+                    indicator.params[paramName] = input.value;
+                });
+                
+                params.indicators.push(indicator);
+            });
+            
+            return params;
+        }
+
+        // ==================== DARK MODE ====================
+        
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Cargar preferencia de modo oscuro
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+        
+        // ==================== MENU UNIVERSAL - VER universal_menu.js ====================
+        
+        // Función de logout (usada por el menú universal)
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(() => {
+                    window.location.href = '/welcome';
+                });
+            }
+        }
+        
+        // Verificar si es admin
+        function checkAdminStatus() {
+            fetch('/api/user-info')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.is_superadmin) {
+                        document.getElementById('adminLink').style.display = 'flex';
+                    }
+                })
+                .catch(() => {});
+        }
+        
+        // Llamar al cargar la página
+        document.addEventListener('DOMContentLoaded', checkAdminStatus);
+
+        // ==================== LANGUAGE TOGGLE ====================
+        
+        let currentLang = localStorage.getItem('language') || 'en';
+        
+        function translateBlocks() {
+            const lang = currentLang || 'es';
+            
+            const blockTranslations = {
+                'EMA': {
+                    name: 'EMA',
+                    desc: { es: 'Media Exp.', en: 'Exp. Avg.' }
+                },
+                'SMA': {
+                    name: 'SMA',
+                    desc: { es: 'Media Simple', en: 'Simple Avg.' }
+                },
+                'RSI': {
+                    name: 'RSI',
+                    desc: { es: 'Fuerza', en: 'Strength' }
+                },
+                'MACD': {
+                    name: 'MACD',
+                    desc: { es: 'Momentum', en: 'Momentum' }
+                },
+                'BBands': {
+                    name: 'Bollinger',
+                    desc: { es: 'Volatilidad', en: 'Volatility' }
+                },
+                'ATR': {
+                    name: 'ATR',
+                    desc: { es: 'Rango', en: 'Range' }
+                },
+                'Swing': {
+                    name: 'Swing',
+                    desc: { es: 'Máx/Mín', en: 'High/Low' }
+                },
+                'Price': {
+                    name: { es: 'Precio', en: 'Price' },
+                    desc: { es: 'Actual', en: 'Current' }
+                },
+                'Number': {
+                    name: { es: 'Número', en: 'Number' },
+                    desc: { es: 'Fijo', en: 'Fixed' }
+                },
+                'Percentage': {
+                    name: { es: 'Porcentaje', en: 'Percentage' },
+                    desc: '%'
+                },
+                'GreaterThan': {
+                    name: { es: 'Mayor', en: 'Greater' },
+                    desc: 'A > B'
+                },
+                'LessThan': {
+                    name: { es: 'Menor', en: 'Less' },
+                    desc: 'A < B'
+                },
+                'GreaterOrEqual': {
+                    name: { es: 'Mayor/Igual', en: 'Greater/Equal' },
+                    desc: 'A ≥ B'
+                },
+                'LessOrEqual': {
+                    name: { es: 'Menor/Igual', en: 'Less/Equal' },
+                    desc: 'A ≤ B'
+                },
+                'Equal': {
+                    name: { es: 'Igual', en: 'Equal' },
+                    desc: 'A = B'
+                },
+                'NotEqual': {
+                    name: { es: 'Diferente', en: 'Different' },
+                    desc: 'A ≠ B'
+                },
+                'Crosses': {
+                    name: { es: 'Cruza', en: 'Crosses' },
+                    desc: 'Crossover'
+                },
+                'AND': {
+                    name: 'AND',
+                    desc: { es: 'A y B', en: 'A and B' }
+                },
+                'OR': {
+                    name: 'OR',
+                    desc: { es: 'A o B', en: 'A or B' }
+                },
+                'NOT': {
+                    name: 'NOT',
+                    desc: { es: 'Niega', en: 'Negates' }
+                },
+                'XOR': {
+                    name: 'XOR',
+                    desc: { es: 'Solo uno', en: 'Only one' }
+                },
+                'NAND': {
+                    name: 'NAND',
+                    desc: { es: 'NO ambos', en: 'NOT both' }
+                },
+                'NOR': {
+                    name: 'NOR',
+                    desc: { es: 'Ninguno', en: 'Neither' }
+                }
+            };
+            
+            // Traducir bloques en la paleta
+            document.querySelectorAll('.blocks-palette .block').forEach(block => {
+                const blockName = block.getAttribute('data-name');
+                const translation = blockTranslations[blockName];
+                
+                if (translation) {
+                    const icon = block.querySelector('.block-icon');
+                    const iconText = icon ? icon.textContent : '';
+                    
+                    const name = typeof translation.name === 'object' ? translation.name[lang] : translation.name;
+                    const desc = typeof translation.desc === 'object' ? translation.desc[lang] : translation.desc;
+                    
+                    block.innerHTML = `<span class="block-icon">${iconText}</span> ${name}<br><small>${desc}</small>`;
+                }
+            });
+            
+            // Traducir bloques arrastrados
+            document.querySelectorAll('.dropped-block').forEach(droppedBlock => {
+                const blockName = droppedBlock.getAttribute('data-name');
+                const translation = blockTranslations[blockName];
+                
+                if (translation) {
+                    const nameSpan = droppedBlock.querySelector('.block-name');
+                    if (nameSpan) {
+                        const name = typeof translation.name === 'object' ? translation.name[lang] : translation.name;
+                        nameSpan.textContent = name;
+                    }
+                }
+            });
+        }
+        
+        function toggleLanguage() {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            localStorage.setItem('language', currentLang);
+            
+            // Actualizar todos los elementos con atributos data-lang
+            document.querySelectorAll('[data-lang-es]').forEach(el => {
+                const text = currentLang === 'es' ? el.getAttribute('data-lang-es') : el.getAttribute('data-lang-en');
+                if (text) {
+                    // Usar innerHTML para mantener el emoji inicial en títulos y spans con HTML
+                    if (el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'H4' || el.tagName === 'SPAN' || el.tagName === 'STRONG') {
+                        el.innerHTML = text;
+                    } else if (el.tagName === 'BUTTON') {
+                        el.innerHTML = text;
+                    } else {
+                        el.textContent = text;
+                    }
+                }
+            });
+            
+            // Actualizar placeholders de inputs
+            document.querySelectorAll('[data-placeholder-es]').forEach(el => {
+                const placeholder = currentLang === 'es' ? el.getAttribute('data-placeholder-es') : el.getAttribute('data-placeholder-en');
+                if (placeholder) {
+                    el.placeholder = placeholder;
+                }
+            });
+            
+            // Actualizar opciones de select (como timeframe)
+            document.querySelectorAll('option[data-lang-es]').forEach(option => {
+                const text = currentLang === 'es' ? option.getAttribute('data-lang-es') : option.getAttribute('data-lang-en');
+                if (text) {
+                    option.textContent = text;
+                }
+            });
+            
+            // Traducir bloques de la paleta
+            translateBlocks();
+            
+            // Actualizar información de estrategia
+            updateStrategyInfo();
+            
+            // Mostrar alerta temporal
+            const langAlert = document.createElement('div');
+            langAlert.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-weight: bold;
+            `;
+            langAlert.textContent = currentLang === 'es' ? '✅ Idioma: Español' : '✅ Language: English';
+            document.body.appendChild(langAlert);
+            
+            setTimeout(() => langAlert.remove(), 2000);
+        }
+        
+        // Cargar preferencia de idioma
+        if (currentLang === 'en') {
+            const langToggle = document.querySelector('.lang-toggle');
+            if (langToggle) {
+                langToggle.textContent = '🌐 ES';
+            }
+            document.querySelectorAll('[data-lang-en]').forEach(el => {
+                const text = el.getAttribute('data-lang-en');
+                if (text) {
+                    if (el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'H4' || el.tagName === 'SPAN' || el.tagName === 'STRONG' || el.tagName === 'BUTTON') {
+                        el.innerHTML = text;
+                    } else {
+                        el.textContent = text;
+                    }
+                }
+            });
+            document.querySelectorAll('[data-placeholder-en]').forEach(el => {
+                const placeholder = el.getAttribute('data-placeholder-en');
+                if (placeholder) el.placeholder = placeholder;
+            });
+            document.querySelectorAll('option[data-lang-en]').forEach(option => {
+                option.textContent = option.getAttribute('data-lang-en');
+            });
+            translateBlocks();
+            updateStrategyInfo();
+        }
+
+        // ==================== DATA GENERATOR ====================
+        
+        // ==================== DISCLAIMER AL CARGAR PÁGINA ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            const disclaimerModal = document.getElementById('disclaimerModal');
+            const disclaimerCheckbox = document.getElementById('disclaimerCheckbox');
+            const acceptDisclaimerBtn = document.getElementById('acceptDisclaimerBtn');
+            const cancelDisclaimerBtn = document.getElementById('cancelDisclaimerBtn');
+            
+            if (disclaimerModal) {
+                // Mostrar modal automáticamente al cargar la página
+                disclaimerModal.classList.add('show');
+                disclaimerCheckbox.checked = false;
+                acceptDisclaimerBtn.disabled = true;
+                
+                // Event listener para el checkbox
+                disclaimerCheckbox.addEventListener('change', function() {
+                    acceptDisclaimerBtn.disabled = !this.checked;
+                });
+                
+                // Event listener para cerrar el modal
+                function closeDisclaimer() {
+                    disclaimerModal.classList.remove('show');
+                }
+                
+                cancelDisclaimerBtn.addEventListener('click', closeDisclaimer);
+                acceptDisclaimerBtn.addEventListener('click', function() {
+                    if (disclaimerCheckbox.checked) {
+                        closeDisclaimer();
+                    }
+                });
+            }
+            
+            // ==================== BACKTEST ====================
+            // Mover el event listener del formulario DENTRO del DOMContentLoaded
+            const backtestForm = document.getElementById('backtestForm');
+            if (backtestForm) {
+                backtestForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // 🔒 VERIFICAR LÍMITE DE SUSCRIPCIÓN
+                    const allowed = await window.subscriptionManager.executeIfAllowed('backtest', null);
+                    if (!allowed) {
+                        console.log('❌ Límite de backtests alcanzado');
+                        return;
+                    }
+                    
+                    const btn = e.target.querySelector('button[type="submit"]');
+                    const loading = document.getElementById('bt_loading');
+                    const loadingText = document.getElementById('bt_loading_text');
+                    const loadingStatus = document.getElementById('bt_loading_status');
+                    const progressBar = document.getElementById('bt_progress_bar');
+                    
+                    // Obtener parámetros desde el constructor visual
+                    const strategyParams = getStrategyParams();
+                    
+                    // Validar que la estrategia tenga al menos una condición
+                    const hasBlocks = document.querySelectorAll('.dropped-block').length > 0;
+                    
+                    if (!hasBlocks) {
+                    const lang = localStorage.getItem('language') || 'en';
+                    // Mostrar alerta estilizada
+                    const alertDiv = document.createElement('div');
+                    alertDiv.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+                        color: white;
+                        padding: 30px 40px;
+                        border-radius: 15px;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                        z-index: 10000;
+                        text-align: center;
+                        max-width: 500px;
+                    `;
+                    
+                    if (lang === 'es') {
+                        alertDiv.innerHTML = `
+                            <h2 style="margin: 0 0 15px 0; font-size: 1.8em;">⚠️ Estrategia No Configurada</h2>
+                            <p style="margin: 10px 0; line-height: 1.8; font-size: 1.1em;">
+                                Debes arrastrar al menos <strong>1 bloque</strong> en el Constructor Visual 
+                                antes de ejecutar el backtest.
+                            </p>
+                            <p style="margin: 15px 0; font-size: 0.95em; opacity: 0.9;">
+                                Ve a la Sección 2 y arrastra bloques como:<br>
+                                <code style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px; margin-top: 10px; display: inline-block;">
+                                    Precio → Mayor que (>) → EMA
+                                </code>
+                            </p>
+                            <button onclick="this.parentElement.remove()" style="
+                                background: #ffffff;
+                                color: #ff6b6b;
+                                border: none;
+                                padding: 12px 30px;
+                                border-radius: 25px;
+                                font-weight: bold;
+                                font-size: 1.1em;
+                                cursor: pointer;
+                                margin-top: 15px;
+                            ">Entendido</button>
+                        `;
+                    } else {
+                        alertDiv.innerHTML = `
+                            <h2 style="margin: 0 0 15px 0; font-size: 1.8em;">⚠️ Strategy Not Configured</h2>
+                            <p style="margin: 10px 0; line-height: 1.8; font-size: 1.1em;">
+                                You must drag at least <strong>1 block</strong> in the Visual Builder 
+                                before running the backtest.
+                            </p>
+                            <p style="margin: 15px 0; font-size: 0.95em; opacity: 0.9;">
+                                Go to Section 2 and drag blocks like:<br>
+                                <code style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px; margin-top: 10px; display: inline-block;">
+                                    Price → Greater than (>) → EMA
+                                </code>
+                            </p>
+                            <button onclick="this.parentElement.remove()" style="
+                                background: #ffffff;
+                                color: #ff6b6b;
+                                border: none;
+                                padding: 12px 30px;
+                                border-radius: 25px;
+                                font-weight: bold;
+                                font-size: 1.1em;
+                                cursor: pointer;
+                                margin-top: 15px;
+                            ">Got it</button>
+                        `;
+                    }
+                    
+                    document.body.appendChild(alertDiv);
+                    return;
+                }
+                
+                const symbolInput = document.getElementById('bt_symbol').value.trim().toUpperCase();
+                const pair = document.getElementById('bt_pair').value;
+                
+                if (!symbolInput) {
+                    const lang = localStorage.getItem('language') || 'en';
+                    const msg = lang === 'es' ? 'Por favor ingresa un símbolo' : 'Please enter a symbol';
+                    alert(msg);
+                    return;
+                }
+                
+                const data = {
+                    symbol: symbolInput,
+                    pair: pair,
+                    timeframe: document.getElementById('bt_timeframe').value,
+                    start_date: document.getElementById('bt_start_date').value,
+                    position_size: parseFloat(document.getElementById('position_size').value),
+                    cash: parseFloat(document.getElementById('cash').value),
+                    commission: parseFloat(document.getElementById('commission').value) / 100,
+                    finalize_trades: document.querySelector('input[name="finalize_trades"]:checked').value
+                };
+                
+                // Solo agregar indicadores si están configurados
+                if (strategyParams.ema_period !== undefined) {
+                    data.ema_period = strategyParams.ema_period;
+                }
+                if (strategyParams.swing_lookback !== undefined) {
+                    data.swing_lookback = strategyParams.swing_lookback;
+                }
+                
+                // EJECUTAR BACKTEST DIRECTAMENTE
+                btn.disabled = true;
+                loading.classList.add('active');
+                
+                // Animación de progreso
+                const lang = localStorage.getItem('language') || 'en';
+                const steps = [
+                    { progress: 10, text: lang === 'es' ? 'Descargando datos de Binance...' : 'Downloading data from Binance...' },
+                    { progress: 30, text: lang === 'es' ? 'Calculando indicadores...' : 'Calculating indicators...' },
+                    { progress: 50, text: lang === 'es' ? 'Ejecutando estrategia...' : 'Running strategy...' },
+                    { progress: 70, text: lang === 'es' ? 'Analizando trades...' : 'Analyzing trades...' },
+                    { progress: 90, text: lang === 'es' ? 'Generando gráficos...' : 'Generating charts...' }
+                ];
+                
+                let currentStep = 0;
+                const progressInterval = setInterval(() => {
+                    if (currentStep < steps.length) {
+                        progressBar.style.width = steps[currentStep].progress + '%';
+                        loadingStatus.textContent = steps[currentStep].text;
+                        currentStep++;
+                    }
+                }, 800);
+                
+                try {
+                    const response = await fetch('/api/backtest/run', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    // Completar progreso
+                    clearInterval(progressInterval);
+                    progressBar.style.width = '100%';
+                    loadingStatus.textContent = lang === 'es' ? '¡Completado!' : 'Completed!';
+                    
+                    if (result.success) {
+                        displayResults(result);
+                    } else {
+                        const errorMsg = lang === 'es' 
+                            ? 'Error: ' + (result.error || result.message)
+                            : 'Error: ' + (result.error || result.message);
+                        alert(errorMsg);
+                    }
+                } catch (error) {
+                    clearInterval(progressInterval);
+                    const errorMsg = lang === 'es' ? 'Error: ' + error.message : 'Error: ' + error.message;
+                    alert(errorMsg);
+                } finally {
+                    clearInterval(progressInterval);
+                    loading.classList.remove('active');
+                    btn.disabled = false;
+                    // Resetear barra de progreso
+                    setTimeout(() => {
+                        progressBar.style.width = '0%';
+                        loadingStatus.textContent = '';
+                    }, 2000);
+                }
+            });
+            } // Cierre del if (backtestForm)
+        }); // Cierre del DOMContentLoaded
+
+        function displayResults(result) {
+            const stats = result.stats;
+            const config = result.config;
+            const statsContainer = document.getElementById('stats_container');
+            const chartContainer = document.getElementById('chart_container');
+            const resultsSection = document.getElementById('results_section');
+            
+            // Guardar resultado para exportar después
+            lastBacktestResult = result;
+            
+            // Valores principales
+            const return_pct = stats['Return [%]'] || 0;
+            const sharpe = stats['Sharpe Ratio'] || 0;
+            const max_dd = stats['Max. Drawdown [%]'] || 0;
+            const equity_initial = config.cash;
+            const equity_final = stats['Equity Final [$]'] || 0;
+            const total_trades = stats['# Trades'] || 0;
+            const win_rate = stats['Win Rate [%]'] || 0;
+            
+            // Profit/Loss
+            const profit_loss = equity_final - equity_initial;
+            
+            // Calcular comisiones totales de manera precisa
+            // Cada trade tiene 2 comisiones (entrada y salida)
+            const avg_trade_size = equity_initial * config.position_size;
+            const total_commission = avg_trade_size * config.commission * total_trades * 2;
+            
+            // Cash final = Equity final (ya incluye todo)
+            const cash_final = equity_final;
+            
+            // Obtener bloques de la estrategia actual
+            const zones = {
+                entry_long: document.querySelectorAll('[data-zone="entry_long"] .dropped-block').length,
+                exit_long: document.querySelectorAll('[data-zone="exit_long"] .dropped-block').length,
+                entry_short: document.querySelectorAll('[data-zone="entry_short"] .dropped-block').length,
+                exit_short: document.querySelectorAll('[data-zone="exit_short"] .dropped-block').length
+            };
+            
+            const totalStrategyBlocks = zones.entry_long + zones.exit_long + zones.entry_short + zones.exit_short;
+            
+            // Crear lista de indicadores configurados REALMENTE en la estrategia
+            let indicatorsHtml = '';
+            const indicators = [];
+            
+            // Buscar bloques EMA configurados en el DOM
+            const emaBlocks = document.querySelectorAll('.dropped-block[data-name="EMA"]');
+            if (emaBlocks.length > 0) {
+                const firstEMA = emaBlocks[0].querySelector('[id$="_period"]');
+                if (firstEMA && firstEMA.value) {
+                    indicators.push(`📐 EMA: ${firstEMA.value}`);
+                }
+            }
+            
+            // Buscar bloques SMA configurados en el DOM
+            const smaBlocks = document.querySelectorAll('.dropped-block[data-name="SMA"]');
+            if (smaBlocks.length > 0) {
+                const firstSMA = smaBlocks[0].querySelector('[id$="_period"]');
+                if (firstSMA && firstSMA.value) {
+                    indicators.push(`📈 SMA: ${firstSMA.value}`);
+                }
+            }
+            
+            // Buscar bloques Swing configurados en el DOM
+            const swingBlocks = document.querySelectorAll('.dropped-block[data-name="Swing"]');
+            if (swingBlocks.length > 0) {
+                const firstSwing = swingBlocks[0].querySelector('[id$="_lookback"]');
+                if (firstSwing && firstSwing.value) {
+                    indicators.push(`🔄 Swing: ${firstSwing.value}`);
+                }
+            }
+            
+            // Buscar otros indicadores
+            const rsiBlocks = document.querySelectorAll('.dropped-block[data-name="RSI"]');
+            if (rsiBlocks.length > 0) {
+                const firstRSI = rsiBlocks[0].querySelector('[id$="_period"]');
+                if (firstRSI && firstRSI.value) {
+                    indicators.push(`⚡ RSI: ${firstRSI.value}`);
+                }
+            }
+            
+            const macdBlocks = document.querySelectorAll('.dropped-block[data-name="MACD"]');
+            if (macdBlocks.length > 0) {
+                indicators.push(`🌊 MACD`);
+            }
+            
+            const bbandsBlocks = document.querySelectorAll('.dropped-block[data-name="BBands"]');
+            if (bbandsBlocks.length > 0) {
+                const firstBB = bbandsBlocks[0].querySelector('[id$="_period"]');
+                if (firstBB && firstBB.value) {
+                    indicators.push(`📏 Bollinger Bands: ${firstBB.value}`);
+                }
+            }
+            
+            const atrBlocks = document.querySelectorAll('.dropped-block[data-name="ATR"]');
+            if (atrBlocks.length > 0) {
+                const firstATR = atrBlocks[0].querySelector('[id$="_period"]');
+                if (firstATR && firstATR.value) {
+                    indicators.push(`📊 ATR: ${firstATR.value}`);
+                }
+            }
+            
+            if (indicators.length > 0) {
+                indicatorsHtml = `
+                    <div class="config-item" style="grid-column: 1 / -1;">
+                        <span class="config-label" data-lang-es="📊 Indicadores:" data-lang-en="📊 Indicators:">📊 Indicadores:</span>
+                        <span class="config-value">${indicators.join(' | ')}</span>
+                    </div>
+                `;
+            }
+            
+            // Información de configuración (solo campos requeridos)
+            const configHtml = `
+                <div class="config-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                    <h3 style="margin-top: 0; color: white;" data-lang-es="🎯 Estrategia Implementada" data-lang-en="🎯 Implemented Strategy">🎯 Estrategia Implementada</h3>
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <p style="margin: 5px 0; font-size: 1.05em;"><strong data-lang-es="📊 Total de bloques:" data-lang-en="📊 Total blocks:">📊 Total de bloques:</strong> ${totalStrategyBlocks}</p>
+                        <p style="margin: 5px 0;"><strong data-lang-es="📈 Entrada LONG:" data-lang-en="📈 LONG Entry:">📈 Entrada LONG:</strong> ${zones.entry_long} <span data-lang-es="bloques" data-lang-en="blocks">bloques</span></p>
+                        <p style="margin: 5px 0;"><strong data-lang-es="🚪 Salida LONG:" data-lang-en="🚪 LONG Exit:">🚪 Salida LONG:</strong> ${zones.exit_long} <span data-lang-es="bloques" data-lang-en="blocks">bloques</span></p>
+                        <p style="margin: 5px 0;"><strong data-lang-es="📉 Entrada SHORT:" data-lang-en="📉 SHORT Entry:">📉 Entrada SHORT:</strong> ${zones.entry_short} <span data-lang-es="bloques" data-lang-en="blocks">bloques</span></p>
+                        <p style="margin: 5px 0;"><strong data-lang-es="🔚 Salida SHORT:" data-lang-en="🔚 SHORT Exit:">🔚 Salida SHORT:</strong> ${zones.exit_short} <span data-lang-es="bloques" data-lang-en="blocks">bloques</span></p>
+                    </div>
+                </div>
+                
+                <div class="config-box" style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #2196f3; margin-bottom: 20px;">
+                    <h3 style="margin-top: 0; color: #333;" data-lang-es="⚙️ Configuración del Backtest" data-lang-en="⚙️ Backtest Configuration">⚙️ Configuración del Backtest</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <span class="config-label" data-lang-es="💱 Par:" data-lang-en="💱 Pair:">💱 Par:</span>
+                            <span class="config-value">${config.symbol}</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label" data-lang-es="⏰ Temporalidad:" data-lang-en="⏰ Timeframe:">⏰ Temporalidad:</span>
+                            <span class="config-value">${config.timeframe}</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label" data-lang-es="📊 Velas:" data-lang-en="📊 Candles:">📊 Velas:</span>
+                            <span class="config-value">${config.total_candles.toLocaleString()}</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">💰 Capital:</span>
+                            <span class="config-value">$${config.cash.toLocaleString()}</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">📈 Position Size:</span>
+                            <span class="config-value">${(config.position_size * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label" data-lang-es="💸 Comisión:" data-lang-en="💸 Commission:">💸 Comisión:</span>
+                            <span class="config-value">${(config.commission * 100).toFixed(2)}%</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label" data-lang-es="🔚 Finalizar trades:" data-lang-en="🔚 Finalize trades:">🔚 Finalizar trades:</span>
+                            <span class="config-value" data-lang-es="${config.finalize_trades ? 'Sí' : 'No'}" data-lang-en="${config.finalize_trades ? 'Yes' : 'No'}">${config.finalize_trades ? 'Sí' : 'No'}</span>
+                        </div>
+                        ${indicatorsHtml}
+                    </div>
+                </div>
+            `;
+            
+            // Estadísticas principales
+            statsContainer.innerHTML = configHtml + `
+                <h3 class="stats-title" data-lang-es="📊 Estadísticas del Backtest" data-lang-en="📊 Backtest Statistics">📊 Estadísticas del Backtest</h3>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <h3 data-lang-es="Capital Inicial" data-lang-en="Initial Capital">Capital Inicial</h3>
+                        <p>$${equity_initial.toFixed(2)}</p>
+                    </div>
+                    <div class="stat-box ${profit_loss >= 0 ? 'positive' : 'negative'}">
+                        <h3>Profit/Loss</h3>
+                        <p>${profit_loss >= 0 ? '+' : ''}$${profit_loss.toFixed(2)}</p>
+                    </div>
+                    <div class="stat-box ${return_pct >= 0 ? 'positive' : 'negative'}">
+                        <h3 data-lang-es="Retorno %" data-lang-en="Return %">Retorno %</h3>
+                        <p>${return_pct >= 0 ? '+' : ''}${return_pct.toFixed(2)}%</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 data-lang-es="Capital Final" data-lang-en="Final Capital">Capital Final</h3>
+                        <p>$${cash_final.toFixed(2)}</p>
+                    </div>
+                    <div class="stat-box negative">
+                        <h3 data-lang-es="Comisiones" data-lang-en="Commissions">Comisiones</h3>
+                        <p>$${total_commission.toFixed(2)}</p>
+                    </div>
+                    <div class="stat-box ${sharpe >= 0 ? 'positive' : 'negative'}">
+                        <h3>Sharpe Ratio</h3>
+                        <p>${(sharpe || 0).toFixed(2)}</p>
+                    </div>
+                    <div class="stat-box negative">
+                        <h3>Max Drawdown</h3>
+                        <p>${max_dd.toFixed(2)}%</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 data-lang-es="Total de Trades" data-lang-en="Total Trades">Total de Trades</h3>
+                        <p>${total_trades}</p>
+                    </div>
+                    <div class="stat-box ${win_rate >= 50 ? 'positive' : 'negative'}">
+                        <h3 data-lang-es="Tasa de Acierto" data-lang-en="Win Rate">Tasa de Acierto</h3>
+                        <p>${win_rate.toFixed(1)}%</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 data-lang-es="Trade Promedio" data-lang-en="Avg Trade">Trade Promedio</h3>
+                        <p>${(stats['Avg. Trade [%]'] || 0).toFixed(2)}%</p>
+                    </div>
+                    <div class="stat-box ${(stats['Best Trade [%]'] || 0) >= 0 ? 'positive' : ''}">
+                        <h3 data-lang-es="Mejor Trade" data-lang-en="Best Trade">Mejor Trade</h3>
+                        <p>${(stats['Best Trade [%]'] || 0).toFixed(2)}%</p>
+                    </div>
+                    <div class="stat-box ${(stats['Worst Trade [%]'] || 0) < 0 ? 'negative' : ''}">
+                        <h3 data-lang-es="Peor Trade" data-lang-en="Worst Trade">Peor Trade</h3>
+                        <p>${(stats['Worst Trade [%]'] || 0).toFixed(2)}%</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 data-lang-es="Tiempo de Exposición" data-lang-en="Exposure Time">Tiempo de Exposición</h3>
+                        <p>${(stats['Exposure Time [%]'] || 0).toFixed(1)}%</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 data-lang-es="Duración Promedio" data-lang-en="Avg Duration">Duración Promedio</h3>
+                        <p>${stats['Avg. Trade Duration'] || 'N/A'}</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 data-lang-es="Duración Máxima" data-lang-en="Max Duration">Duración Máxima</h3>
+                        <p>${stats['Max. Trade Duration'] || 'N/A'}</p>
+                    </div>
+                </div>
+            `;
+            
+            if (result.chart_html) {
+                chartContainer.innerHTML = `
+                    <h3 class="stats-title" style="margin: 20px 0 15px 0;" data-lang-es="📈 Gráfico Interactivo" data-lang-en="📈 Interactive Chart">📈 Gráfico Interactivo</h3>
+                    <iframe srcdoc="${result.chart_html.replace(/"/g, '&quot;')}" 
+                            class="chart-iframe"></iframe>
+                `;
+            }
+            
+            // Mostrar botón de exportar
+            const exportBtn = document.getElementById('exportBacktestBtn');
+            if (exportBtn) {
+                exportBtn.style.display = 'inline-block';
+            }
+            
+            resultsSection.classList.add('show');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+            
+            // Mensaje de confirmación
+            console.log('✅ Backtest ejecutado exitosamente');
+        }
+    </script>
+
+    <!-- Footer con crédito del autor -->
+    <footer style="text-align: center; padding: 20px; background-color: #0f3460; color: #eee; margin-top: 50px; font-size: 0.9em;">
+        <p style="margin: 0;">Este software fue creado por <strong>camiloeagiraldodev@gmail.com</strong></p>
+    </footer>
+
+    <script>
+        /* MENÚ UNIVERSAL JAVASCRIPT INLINE */
+        function toggleUniversalMenu() {
+            const menu = document.getElementById('universalMenu');
+            if (menu) {
+                menu.classList.toggle('active');
+            }
+        }
+        document.addEventListener('click', function(event) {
+            const menu = document.querySelector('.universal-menu');
+            const menuContent = document.getElementById('universalMenu');
+            if (menu && menuContent && !menu.contains(event.target)) {
+                menuContent.classList.remove('active');
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/auth/me')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.user && data.user.role === 'admin') {
+                        const adminLink = document.getElementById('adminMenuLink');
+                        if (adminLink) adminLink.style.display = 'block';
+                    }
+                })
+                .catch(err => console.error('Error verificando rol:', err));
+        });
+        /* FIN MENÚ UNIVERSAL */
+    </script>
+
+    <!-- Sistema de gestión de suscripciones -->
+    <script src="/static/js/subscription_manager.js"></script>
+</body>
+</html>
+

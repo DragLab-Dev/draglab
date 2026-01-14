@@ -1,0 +1,22 @@
+<!-- MENÚ UNIVERSAL - HTML -->
+<!-- Incluir en TODAS las páginas después del <body> -->
+<!-- Cargar CSS: <link rel="stylesheet" href="/static/css/universal_menu.css"> -->
+<!-- Cargar JS: <script src="/static/js/universal_menu.js"></script> -->
+
+<div class="universal-menu">
+    <button class="menu-btn" onclick="toggleUniversalMenu()" title="Menú">☰</button>
+    <div class="universal-menu-content" id="universalMenu">
+        <a href="/">🏠 Inicio</a>
+        <a href="/backtest">🧱 Visual Strategy Builder</a>
+        <a href="/trading-bot">🤖 Trading Bot</a>
+        <div class="menu-divider"></div>
+        <a href="/user-panel">👤 Mi Cuenta</a>
+        <a href="/subscriptions">💎 Suscripciones</a>
+        <a href="/admin/panel" id="adminMenuLink" style="display: none;">🔒 Panel Admin</a>
+        <div class="menu-divider"></div>
+        <button onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
+        <button onclick="toggleLanguage()">🌐 Idioma</button>
+        <div class="menu-divider"></div>
+        <button onclick="logout()">🚪 Cerrar Sesión</button>
+    </div>
+</div>

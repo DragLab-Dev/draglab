@@ -1,0 +1,756 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User panel - DragLab</title>
+    <style>
+        /* MENÚ UNIVERSAL INLINE */
+        .universal-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        .universal-menu .menu-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.9);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .universal-menu .menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .universal-menu-content {
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background: white;
+            min-width: 250px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .universal-menu-content.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .universal-menu-content a,
+        .universal-menu-content button {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .universal-menu-content a:hover,
+        .universal-menu-content button:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .universal-menu-content .menu-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+            margin: 5px 0;
+        }
+        body.dark-mode .universal-menu-content {
+            background: #1e1e2e;
+        }
+        body.dark-mode .universal-menu-content a,
+        body.dark-mode .universal-menu-content button {
+            color: #fff;
+        }
+        body.dark-mode .universal-menu-content .menu-divider {
+            background: rgba(255,255,255,0.1);
+        }
+        /* FIN MENÚ UNIVERSAL */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        /* Botón de Retroceder */
+        .btn-back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        .btn-back:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.3);
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .info-item {
+            margin: 10px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .subscription-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .subscription-badge.free {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .subscription-badge.premium {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .subscription-badge.pro {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <!-- MENÚ UNIVERSAL -->
+    <div class="universal-menu">
+        <button class="menu-btn" onclick="toggleUniversalMenu()" title="Menú">☰</button>
+        <div class="universal-menu-content" id="universalMenu">
+            <a href="/">🏠 Inicio</a>
+            <a href="/backtest">🧱 Visual Strategy Builder</a>
+            <a href="/trading-bot">🤖 Trading Bot</a>
+            <div class="menu-divider"></div>
+            <a href="/user-panel">👤 Mi Cuenta</a>
+            <a href="/subscriptions">💎 Suscripciones</a>
+            <a href="/admin/panel" id="adminMenuLink" style="display: none;">🔒 Panel Admin</a>
+            <div class="menu-divider"></div>
+            <button onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
+            <button onclick="toggleLanguage()">🌐 Idioma</button>
+            <div class="menu-divider"></div>
+            <button onclick="logout()">🚪 Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>👤 Panel de Usuario</h1>
+            <p>Gestiona tu cuenta y suscripción</p>
+        </div>
+
+        <!-- Alertas -->
+        <div id="alertSuccess" class="alert alert-success"></div>
+        <div id="alertError" class="alert alert-error"></div>
+
+        <!-- Información de la Cuenta -->
+        <div class="section">
+            <h2>📋 Información de la Cuenta</h2>
+            <div class="grid-2">
+                <div class="info-box">
+                    <h3>Datos Personales</h3>
+                    <div class="info-item">
+                        <div class="info-label">Nombre</div>
+                        <div class="info-value" id="userName">Cargando...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value" id="userEmail">Cargando...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Miembro desde</div>
+                        <div class="info-value" id="memberSince">Cargando...</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>Suscripción</h3>
+                    <div class="info-item">
+                        <div class="info-label">Plan Actual</div>
+                        <div class="info-value">
+                            <span id="subscriptionPlan" class="subscription-badge free">Free</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Estado</div>
+                        <div class="info-value" id="subscriptionStatus">Activo</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Próxima facturación</div>
+                        <div class="info-value" id="nextBilling">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas de Uso -->
+        <div class="section">
+            <h2>📊 Estadísticas de Uso</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="backtestsCount">0</div>
+                    <div class="stat-label">Backtests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="signalBotsCount">0</div>
+                    <div class="stat-label">Bots de Señales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="autoBotsCount">0</div>
+                    <div class="stat-label">Bots Automáticos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="strategiesCount">0</div>
+                    <div class="stat-label">Estrategias</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cambiar Contraseña -->
+        <div class="section">
+            <h2>🔐 Cambiar Contraseña</h2>
+            <form id="changePasswordForm">
+                <div class="grid-2">
+                    <div>
+                        <div class="form-group">
+                            <label for="currentPassword">Contraseña Actual</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="newPassword">Nueva Contraseña</label>
+                            <input type="password" id="newPassword" required minlength="8">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmar Nueva Contraseña</label>
+                            <input type="password" id="confirmPassword" required minlength="8">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Actualizar Contraseña</button>
+            </form>
+        </div>
+
+        <!-- Gestión de Suscripción -->
+        <div class="section">
+            <h2>💳 Gestión de Suscripción</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                <!-- Free Trial -->
+                <div class="info-box">
+                    <h3>🆓 Free Trial</h3>
+                    <ul style="list-style: none; padding: 0; margin: 15px 0;">
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ 10 Backtests incluidos</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ 1 Signal Bot activo</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ 3 Indicadores técnicos</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ 2 Estrategias guardadas</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ Señales por Telegram</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">⚠️ 14 días de prueba</li>
+                    </ul>
+                    <p style="font-size: 1.8em; font-weight: bold; color: #667eea; margin: 15px 0;">$0</p>
+                    <p style="font-size: 0.85em; color: #666; margin-top: -10px;">14 días gratis</p>
+                    <button class="btn" onclick="upgradePlan('free_trial')" style="margin-top: 10px;">Iniciar Prueba Gratis</button>
+                </div>
+
+                <!-- Pro Monthly -->
+                <div class="info-box" style="border-left-color: #f093fb;">
+                    <h3>💼 Pro Monthly</h3>
+                    <ul style="list-style: none; padding: 0; margin: 15px 0;">
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ 100 Backtests/mes</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ 5 Signal Bots simultáneos</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ 2 Auto Trading Bots</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ Indicadores ilimitados</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ Gestión de riesgo automática</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ Soporte prioritario 24/7</li>
+                    </ul>
+                    <p style="font-size: 1.8em; font-weight: bold; color: #f093fb; margin: 15px 0;">$29.99</p>
+                    <p style="font-size: 0.85em; color: #666; margin-top: -10px;">por mes</p>
+                    <button class="btn btn-secondary" onclick="upgradePlan('pro_monthly')" style="margin-top: 10px;">Actualizar a Pro Monthly</button>
+                </div>
+
+                <!-- Pro Annual -->
+                <div class="info-box" style="border-left-color: #4facfe; position: relative;">
+                    <div style="position: absolute; top: -10px; right: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.75em; font-weight: bold;">17% OFF</div>
+                    <h3>👑 Pro Annual</h3>
+                    <ul style="list-style: none; padding: 0; margin: 15px 0;">
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ Backtests ILIMITADOS</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ Signal Bots ILIMITADOS</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ Auto Bots ILIMITADOS</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ API REST avanzada</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ Webhooks personalizados</li>
+                        <li style="padding: 6px 0; font-size: 0.9em;">✓ Soporte VIP 24/7</li>
+                    </ul>
+                    <p style="font-size: 1.8em; font-weight: bold; color: #4facfe; margin: 15px 0;">$299.99</p>
+                    <p style="font-size: 0.85em; color: #666; margin-top: -10px;">por año · Ahorra $60</p>
+                    <button class="btn" onclick="upgradePlan('pro_annual')" style="margin-top: 10px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">Actualizar a Pro Annual</button>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 25px; color: #666; font-size: 0.9em;">
+                📋 <a href="/subscriptions" style="color: #667eea; text-decoration: none; font-weight: 600;">Ver comparación completa de planes</a>
+            </p>
+        </div>
+
+        <!-- Zona de Peligro -->
+        <div class="section">
+            <h2 style="color: #dc3545;">⚠️ Zona de Peligro</h2>
+            <div class="info-box" style="border-left-color: #dc3545; background: #fff5f5;">
+                <h3 style="color: #dc3545;">Eliminar Cuenta</h3>
+                <p style="margin: 15px 0; color: #721c24;">
+                    Esta acción es <strong>irreversible</strong>. Se eliminarán todos tus datos, bots y configuraciones.
+                </p>
+                <button class="btn btn-danger" onclick="confirmDeleteAccount()">Eliminar Mi Cuenta</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cargar información del usuario
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/user-info');
+                const data = await response.json();
+                
+                if (data.success && data.user) {
+                    const user = data.user;
+                    document.getElementById('userName').textContent = user.name || 'Usuario';
+                    document.getElementById('userEmail').textContent = user.email || 'No disponible';
+                    document.getElementById('memberSince').textContent = user.created_at ? 
+                        new Date(user.created_at).toLocaleDateString('es-ES') : 'No disponible';
+                    
+                    // Cargar suscripción desde el sistema de suscripciones
+                    await loadSubscriptionInfo();
+                    
+                } else {
+                    showAlert('error', 'No se pudo cargar la información del usuario');
+                }
+            } catch (error) {
+                console.error('Error cargando información del usuario:', error);
+                showAlert('error', 'Error al cargar la información del usuario');
+            }
+            
+            // Cargar estadísticas desde localStorage
+            loadStats();
+        }
+
+        // Cargar información de suscripción desde el nuevo sistema
+        async function loadSubscriptionInfo() {
+            try {
+                const response = await fetch('/api/subscriptions/current');
+                const data = await response.json();
+                
+                const planElement = document.getElementById('subscriptionPlan');
+                const statusElement = document.getElementById('subscriptionStatus');
+                const billingElement = document.getElementById('nextBilling');
+                
+                if (data.success && data.subscription) {
+                    const sub = data.subscription;
+                    
+                    // Mapeo de nombres de planes a display
+                    const planNames = {
+                        'free_trial': '🆓 Free Trial',
+                        'pro_monthly': '💼 Pro Monthly',
+                        'pro_annual': '👑 Pro Annual'
+                    };
+                    
+                    planElement.textContent = planNames[sub.plan_name] || sub.plan_name;
+                    planElement.className = `subscription-badge ${sub.plan_name === 'free_trial' ? 'free' : 'premium'}`;
+                    
+                    statusElement.textContent = sub.status === 'active' ? 'Activo ✓' : 
+                                               sub.status === 'expired' ? 'Expirado' : 'Cancelado';
+                    
+                    if (sub.end_date) {
+                        const endDate = new Date(sub.end_date);
+                        billingElement.textContent = endDate.toLocaleDateString('es-ES');
+                    }
+                } else {
+                    // Sin suscripción activa
+                    planElement.textContent = 'Sin Plan';
+                    planElement.className = 'subscription-badge free';
+                    statusElement.textContent = 'Inactivo';
+                    billingElement.textContent = '-';
+                }
+            } catch (error) {
+                console.error('Error loading subscription:', error);
+                // Valores por defecto en caso de error
+                document.getElementById('subscriptionPlan').textContent = 'Free';
+                document.getElementById('subscriptionPlan').className = 'subscription-badge free';
+                document.getElementById('subscriptionStatus').textContent = 'Activo';
+                document.getElementById('nextBilling').textContent = '-';
+            }
+        }
+
+        function loadStats() {
+            const signalBots = JSON.parse(localStorage.getItem('signalBots') || '[]');
+            const autoBots = JSON.parse(localStorage.getItem('autoBots') || '[]');
+            
+            document.getElementById('signalBotsCount').textContent = signalBots.length;
+            document.getElementById('autoBotsCount').textContent = autoBots.length;
+            document.getElementById('backtestsCount').textContent = localStorage.getItem('backtestsCount') || '0';
+            document.getElementById('strategiesCount').textContent = signalBots.length + autoBots.length;
+        }
+
+        // Cambiar contraseña
+        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showAlert('error', 'Las contraseñas no coinciden');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                showAlert('error', 'La contraseña debe tener al menos 8 caracteres');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        currentPassword: currentPassword,
+                        newPassword: newPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('success', 'Contraseña actualizada exitosamente');
+                    this.reset();
+                } else {
+                    showAlert('error', data.error || 'Error al cambiar la contraseña');
+                }
+            } catch (error) {
+                showAlert('error', 'Error de conexión. Intenta nuevamente.');
+            }
+        });
+
+        function showAlert(type, message) {
+            const alertId = type === 'success' ? 'alertSuccess' : 'alertError';
+            const alert = document.getElementById(alertId);
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        function upgradePlan(plan) {
+            // Redirigir a página de suscripciones
+            window.location.href = '/subscriptions?plan=' + plan;
+        }
+
+        function confirmDeleteAccount() {
+            if (confirm('¿Estás seguro de que deseas eliminar tu cuenta?\n\nEsta acción NO se puede deshacer.')) {
+                if (confirm('Por favor confirma nuevamente. Se eliminarán TODOS tus datos, bots y configuraciones.')) {
+                    deleteAccount();
+                }
+            }
+        }
+
+        async function deleteAccount() {
+            const password = prompt('Por favor, ingresa tu contraseña para confirmar la eliminación de la cuenta:');
+            
+            if (!password) {
+                showAlert('error', 'Se requiere la contraseña para eliminar la cuenta');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/delete-account', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Tu cuenta ha sido eliminada. Serás redirigido a la página principal.');
+                    localStorage.clear();
+                    window.location.href = '/welcome';
+                } else {
+                    showAlert('error', data.error || 'Error al eliminar la cuenta');
+                }
+            } catch (error) {
+                showAlert('error', 'Error de conexión. Intenta nuevamente.');
+            }
+        }
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', loadUserInfo);
+
+        // Modo oscuro
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Cambiar idioma
+        function toggleLanguage() {
+            const currentLang = localStorage.getItem('language') || 'en';
+            const newLang = currentLang === 'es' ? 'en' : 'es';
+            localStorage.setItem('language', newLang);
+            alert('🌐 Idioma cambiado a: ' + (newLang === 'es' ? 'Español' : 'English'));
+        }
+
+        // Cerrar sesión
+        function logout() {
+            if (confirm('¿Estas seguro de que deseas cerrar sesión?')) {
+                localStorage.removeItem('session_token');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+
+    <!-- Sistema de gestión de suscripciones -->
+    <script src="/static/js/subscription_manager.js"></script>
+
+    <script>
+        /* MENÚ UNIVERSAL JAVASCRIPT INLINE */
+        function toggleUniversalMenu() {
+            const menu = document.getElementById('universalMenu');
+            if (menu) {
+                menu.classList.toggle('active');
+            }
+        }
+        document.addEventListener('click', function(event) {
+            const menu = document.querySelector('.universal-menu');
+            const menuContent = document.getElementById('universalMenu');
+            if (menu && menuContent && !menu.contains(event.target)) {
+                menuContent.classList.remove('active');
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/auth/me')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.user && data.user.role === 'admin') {
+                        const adminLink = document.getElementById('adminMenuLink');
+                        if (adminLink) adminLink.style.display = 'block';
+                    }
+                })
+                .catch(err => console.error('Error verificando rol:', err));
+        });
+        /* FIN MENÚ UNIVERSAL */
+    </script>

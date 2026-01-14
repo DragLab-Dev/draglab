@@ -1,0 +1,1043 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suscripciones - DragLab</title>
+    <style>
+        /* MENÚ UNIVERSAL INLINE */
+        .universal-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        .universal-menu .menu-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.9);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .universal-menu .menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .universal-menu-content {
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background: white;
+            min-width: 250px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .universal-menu-content.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .universal-menu-content a,
+        .universal-menu-content button {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .universal-menu-content a:hover,
+        .universal-menu-content button:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .universal-menu-content .menu-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+            margin: 5px 0;
+        }
+        body.dark-mode .universal-menu-content {
+            background: #1e1e2e;
+        }
+        body.dark-mode .universal-menu-content a,
+        body.dark-mode .universal-menu-content button {
+            color: #fff;
+        }
+        body.dark-mode .universal-menu-content .menu-divider {
+            background: rgba(255,255,255,0.1);
+        }
+        /* FIN MENÚ UNIVERSAL */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        /* Suscripción Actual */
+        .current-subscription {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .current-subscription h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .subscription-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .subscription-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .badge-free {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-monthly {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .badge-annual {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .usage-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .usage-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .usage-item h4 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .usage-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .usage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+
+        .usage-fill.warning {
+            background: linear-gradient(90deg, #ff9800, #f57c00);
+        }
+
+        .usage-fill.danger {
+            background: linear-gradient(90deg, #f44336, #d32f2f);
+        }
+
+        .usage-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Planes de Suscripción */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .plan-card.featured {
+            border: 3px solid #667eea;
+        }
+
+        .plan-card.featured::before {
+            content: "⭐ RECOMENDADO";
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background: #667eea;
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .plan-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .plan-name {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .plan-price small {
+            font-size: 0.4em;
+            color: #999;
+        }
+
+        .plan-duration {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .plan-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+
+        .plan-features li::before {
+            content: "✓";
+            color: #4caf50;
+            font-weight: 700;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .plan-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .plan-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .plan-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .plan-button.current {
+            background: #4caf50;
+        }
+
+        /* Modal de Pago */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .payment-methods {
+            margin: 20px 0;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover,
+        .payment-method.selected {
+            border-color: #667eea;
+            background: #f5f7ff;
+        }
+
+        .payment-method input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        #paypal-button-container {
+            margin-top: 20px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alert */
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <!-- MENÚ UNIVERSAL -->
+    <div class="universal-menu">
+        <button class="menu-btn" onclick="toggleUniversalMenu()" title="Menú">☰</button>
+        <div class="universal-menu-content" id="universalMenu">
+            <a href="/">🏠 Inicio</a>
+            <a href="/backtest">🧱 Visual Strategy Builder</a>
+            <a href="/trading-bot">🤖 Trading Bot</a>
+            <div class="menu-divider"></div>
+            <a href="/user-panel">👤 Mi Cuenta</a>
+            <a href="/subscriptions">💎 Suscripciones</a>
+            <a href="/admin/panel" id="adminMenuLink" style="display: none;">🔒 Panel Admin</a>
+            <div class="menu-divider"></div>
+            <button onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
+            <button onclick="toggleLanguage()">🌐 Idioma</button>
+            <div class="menu-divider"></div>
+            <button onclick="logout()">🚪 Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>💳 Planes de Suscripción</h1>
+            <p>Elige el plan perfecto para tu estrategia de trading</p>
+        </div>
+
+        <!-- Suscripción Actual -->
+        <div class="current-subscription" id="currentSubscription">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Cargando información...</p>
+            </div>
+        </div>
+
+        <!-- Planes Disponibles -->
+        <div class="plans-grid" id="plansGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Cargando planes...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Completar Pago</h2>
+                <button class="close-modal" onclick="closePaymentModal()">×</button>
+            </div>
+            
+            <div id="modalBody">
+                <div class="alert alert-info" id="planInfo"></div>
+                
+                <h3>Método de Pago</h3>
+                <div class="payment-methods">
+                    <label class="payment-method selected">
+                        <input type="radio" name="payment" value="paypal" checked>
+                        <span>💰 PayPal</span>
+                    </label>
+                </div>
+                
+                <div id="paypal-button-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD"></script>
+    
+    <script>
+        let currentSubscription = null;
+        let selectedPlan = null;
+
+        // Cargar datos
+        async function loadData() {
+            await loadCurrentSubscription();
+            await loadPlans();
+        }
+
+        async function loadCurrentSubscription() {
+            try {
+                const response = await fetch('/api/subscriptions/current');
+                const data = await response.json();
+                
+                if (data.success && data.subscription) {
+                    currentSubscription = data.subscription;
+                    renderCurrentSubscription(data.subscription);
+                    await loadUsage();
+                } else {
+                    document.getElementById('currentSubscription').innerHTML = `
+                        <div class="alert alert-info">
+                            No tienes una suscripción activa. ¡Elige un plan para empezar!
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading subscription:', error);
+            }
+        }
+
+        async function loadUsage() {
+            try {
+                const response = await fetch('/api/subscriptions/usage');
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderUsage(data.usage, data.limits);
+                }
+            } catch (error) {
+                console.error('Error loading usage:', error);
+            }
+        }
+
+        function renderCurrentSubscription(subscription) {
+            const badgeClass = {
+                'free_trial': 'badge-free',
+                'monthly': 'badge-monthly',
+                'annual': 'badge-annual'
+            }[subscription.plan_name] || 'badge-free';
+
+            document.getElementById('currentSubscription').innerHTML = `
+                <h2>Tu Suscripción Actual</h2>
+                <div class="subscription-info">
+                    <div>
+                        <span class="subscription-badge ${badgeClass}">
+                            ${subscription.display_name}
+                        </span>
+                        <p style="margin-top: 10px; color: #666;">
+                            ${subscription.days_remaining > 0 
+                                ? `Expira en ${subscription.days_remaining} días` 
+                                : 'Expirada'}
+                        </p>
+                    </div>
+                    ${subscription.days_remaining < 7 && subscription.plan_name !== 'annual' ? `
+                        <button class="plan-button" onclick="openPaymentModal(getMonthlyPlan())" style="width: auto; padding: 10px 20px;">
+                            Renovar Ahora
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="usage-stats" id="usageStats"></div>
+            `;
+        }
+
+        function renderUsage(usage, limits) {
+            const items = [
+                { name: '📊 Backtests', used: usage.backtests || 0, limit: limits.backtests || 0 },
+                { name: '🤖 Signal Bots', used: usage.signal_bots || 0, limit: limits.signal_bots || 0 },
+                { name: '⚙️ Auto Bots', used: usage.auto_bots || 0, limit: limits.auto_bots || 0 },
+                { name: '📈 Estrategias', used: usage.strategies || 0, limit: limits.strategies || 0 }
+            ];
+
+            const html = items.map(item => {
+                const percent = item.limit === -1 ? 0 : item.limit === 0 ? 0 : (item.used / item.limit) * 100;
+                const fillClass = percent > 90 ? 'danger' : percent > 70 ? 'warning' : '';
+                const limitText = item.limit === -1 ? '∞' : item.limit;
+                
+                return `
+                    <div class="usage-item">
+                        <h4>${item.name}</h4>
+                        <div class="usage-text">${item.used} / ${limitText}</div>
+                        ${item.limit === -1 ? 
+                            '<p style="color: #4caf50; font-weight: 600; margin-top: 5px;">✓ Ilimitado</p>' :
+                            item.limit === 0 ?
+                            '<p style="color: #999; font-weight: 600; margin-top: 5px;">✗ No disponible</p>' :
+                            `<div class="usage-bar">
+                                <div class="usage-fill ${fillClass}" style="width: ${Math.min(percent, 100)}%"></div>
+                            </div>`
+                        }
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('usageStats').innerHTML = html;
+        }
+
+        async function loadPlans() {
+            try {
+                const response = await fetch('/api/subscriptions/plans');
+                const data = await response.json();
+                
+                if (data.success && data.plans && data.plans.length > 0) {
+                    renderPlans(data.plans);
+                } else {
+                    // Planes predefinidos si el backend no está listo
+                    const defaultPlans = [
+                        {
+                            name: 'free_trial',
+                            display_name: '🆓 Free Trial',
+                            price: 0,
+                            currency: 'USD',
+                            duration_days: 14,
+                            limits: {
+                                backtests: 10,
+                                signal_bots: 1,
+                                auto_bots: 0,
+                                operations_per_day: 5,
+                                indicators: 3,
+                                strategies: 2
+                            },
+                            features: [
+                                '✓ 10 Backtests incluidos',
+                                '✓ 1 Signal Bot activo',
+                                '✓ 3 Indicadores técnicos',
+                                '✓ 2 Estrategias guardadas',
+                                '✓ 5 Operaciones/día',
+                                '✓ Constructor visual básico',
+                                '✓ Señales por Telegram',
+                                '✓ Soporte por email',
+                                '⚠️ 14 días de prueba'
+                            ]
+                        },
+                        {
+                            name: 'pro_monthly',
+                            display_name: '💼 Pro Monthly',
+                            price: 29.99,
+                            currency: 'USD',
+                            duration_days: 30,
+                            limits: {
+                                backtests: 100,
+                                signal_bots: 5,
+                                auto_bots: 2,
+                                operations_per_day: 50,
+                                indicators: -1,
+                                strategies: 10
+                            },
+                            features: [
+                                '✓ 100 Backtests/mes',
+                                '✓ 5 Signal Bots simultáneos',
+                                '✓ 2 Auto Trading Bots',
+                                '✓ Indicadores ilimitados',
+                                '✓ 10 Estrategias guardadas',
+                                '✓ 50 Operaciones/día',
+                                '✓ Constructor visual avanzado',
+                                '✓ Gestión de riesgo automática',
+                                '✓ Stop-Loss y Take-Profit',
+                                '✓ Historial completo de señales',
+                                '✓ Análisis de rendimiento',
+                                '✓ Soporte prioritario 24/7',
+                                '✓ Actualizaciones automáticas'
+                            ]
+                        },
+                        {
+                            name: 'pro_annual',
+                            display_name: '👑 Pro Annual',
+                            price: 299.99,
+                            currency: 'USD',
+                            duration_days: 365,
+                            discount: '17% OFF',
+                            limits: {
+                                backtests: -1,
+                                signal_bots: -1,
+                                auto_bots: -1,
+                                operations_per_day: -1,
+                                indicators: -1,
+                                strategies: -1
+                            },
+                            features: [
+                                '✓ Backtests ILIMITADOS',
+                                '✓ Signal Bots ILIMITADOS',
+                                '✓ Auto Trading Bots ILIMITADOS',
+                                '✓ Indicadores ILIMITADOS',
+                                '✓ Estrategias ILIMITADAS',
+                                '✓ Operaciones ILIMITADAS',
+                                '✓ Constructor visual premium',
+                                '✓ API REST avanzada',
+                                '✓ Webhooks personalizados',
+                                '✓ Gestión de múltiples exchanges',
+                                '✓ Backtesting con datos históricos premium',
+                                '✓ Machine Learning signals (próximamente)',
+                                '✓ Soporte VIP 24/7',
+                                '✓ Acceso anticipado a nuevas features',
+                                '✓ Ahorra $60/año vs mensual'
+                            ]
+                        }
+                    ];
+                    renderPlans(defaultPlans);
+                }
+            } catch (error) {
+                console.error('Error loading plans:', error);
+                // Mostrar planes por defecto en caso de error (sin reintentar)
+                const defaultPlans = [
+                    {
+                        name: 'free_trial',
+                        display_name: '🆓 Free Trial',
+                        price: 0,
+                        currency: 'USD',
+                        duration_days: 14,
+                        limits: {
+                            backtests: 10,
+                            signal_bots: 1,
+                            auto_bots: 0,
+                            operations_per_day: 5,
+                            indicators: 3,
+                            strategies: 2
+                        },
+                        features: [
+                            '✓ 10 Backtests incluidos',
+                            '✓ 1 Signal Bot activo',
+                            '✓ 3 Indicadores técnicos',
+                            '✓ 2 Estrategias guardadas',
+                            '✓ 5 Operaciones/día',
+                            '✓ Constructor visual básico',
+                            '✓ Señales por Telegram',
+                            '✓ Soporte por email',
+                            '⚠️ 14 días de prueba'
+                        ]
+                    },
+                    {
+                        name: 'pro_monthly',
+                        display_name: '💼 Pro Monthly',
+                        price: 29.99,
+                        currency: 'USD',
+                        duration_days: 30,
+                        limits: {
+                            backtests: 100,
+                            signal_bots: 5,
+                            auto_bots: 2,
+                            operations_per_day: 50,
+                            indicators: -1,
+                            strategies: 10
+                        },
+                        features: [
+                            '✓ 100 Backtests/mes',
+                            '✓ 5 Signal Bots simultáneos',
+                            '✓ 2 Auto Trading Bots',
+                            '✓ Indicadores ilimitados',
+                            '✓ 10 Estrategias guardadas',
+                            '✓ 50 Operaciones/día',
+                            '✓ Constructor visual avanzado',
+                            '✓ Gestión de riesgo automática',
+                            '✓ Stop-Loss y Take-Profit',
+                            '✓ Historial completo de señales',
+                            '✓ Análisis de rendimiento',
+                            '✓ Soporte prioritario 24/7',
+                            '✓ Actualizaciones automáticas'
+                        ]
+                    },
+                    {
+                        name: 'pro_annual',
+                        display_name: '👑 Pro Annual',
+                        price: 299.99,
+                        currency: 'USD',
+                        duration_days: 365,
+                        discount: '17% OFF',
+                        limits: {
+                            backtests: -1,
+                            signal_bots: -1,
+                            auto_bots: -1,
+                            operations_per_day: -1,
+                            indicators: -1,
+                            strategies: -1
+                        },
+                        features: [
+                            '✓ Backtests ILIMITADOS',
+                            '✓ Signal Bots ILIMITADOS',
+                            '✓ Auto Trading Bots ILIMITADOS',
+                            '✓ Indicadores ILIMITADOS',
+                            '✓ Estrategias ILIMITADAS',
+                            '✓ Operaciones ILIMITADAS',
+                            '✓ Constructor visual premium',
+                            '✓ API REST avanzada',
+                            '✓ Webhooks personalizados',
+                            '✓ Gestión de múltiples exchanges',
+                            '✓ Backtesting con datos históricos premium',
+                            '✓ Machine Learning signals (próximamente)',
+                            '✓ Soporte VIP 24/7',
+                            '✓ Acceso anticipado a nuevas features',
+                            '✓ Ahorra $60/año vs mensual'
+                        ]
+                    }
+                ];
+                renderPlans(defaultPlans);
+            }
+        }
+
+        function renderPlans(plans) {
+            const html = plans.map((plan, index) => {
+                const features = Array.isArray(plan.features) ? plan.features : JSON.parse(plan.features || '[]');
+                const isCurrent = currentSubscription && currentSubscription.plan_name === plan.name;
+                const isFeatured = plan.name === 'pro_monthly';
+                const limitText = (limit) => limit === -1 ? 'Ilimitado' : limit;
+                const durationText = plan.duration_days === 365 ? '1 año' : plan.duration_days === 30 ? '1 mes' : `${plan.duration_days} días`;
+                
+                return `
+                    <div class="plan-card ${isFeatured ? 'featured' : ''}">
+                        <div class="plan-header">
+                            <h3 class="plan-name">${plan.display_name}</h3>
+                            ${plan.discount ? `<div style="background: #ff9800; color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.8em; font-weight: 600; margin-bottom: 10px; display: inline-block;">${plan.discount}</div>` : ''}
+                            <div class="plan-price">
+                                ${plan.price > 0 ? `$${plan.price.toFixed(2)}` : 'GRATIS'}
+                                ${plan.price > 0 ? `<small>/${plan.currency}</small>` : ''}
+                            </div>
+                            <p class="plan-duration">${durationText}</p>
+                            ${plan.price > 0 && plan.duration_days === 30 ? `<p style="color: #999; font-size: 0.8em; margin-top: 5px;">≈ $${(plan.price / 30).toFixed(2)}/día</p>` : ''}
+                            ${plan.price > 0 && plan.duration_days === 365 ? `<p style="color: #4caf50; font-size: 0.8em; margin-top: 5px; font-weight: 600;">≈ $${(plan.price / 365).toFixed(2)}/día</p>` : ''}
+                        </div>
+                        
+                        <ul class="plan-features">
+                            ${features.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                        
+                        <button 
+                            class="plan-button ${isCurrent ? 'current' : ''}" 
+                            onclick='selectPlan(${JSON.stringify(plan)})'
+                            ${isCurrent ? 'disabled' : ''}
+                        >
+                            ${isCurrent ? '✓ Plan Actual' : plan.price > 0 ? '💳 Suscribirse Ahora' : '🎁 Probar Gratis'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('plansGrid').innerHTML = html;
+        }
+
+        function selectPlan(plan) {
+            if (plan.price === 0) {
+                // Free trial - activar directamente
+                activateFreeTrial(plan);
+            } else {
+                // Plan de pago - abrir modal
+                openPaymentModal(plan);
+            }
+        }
+
+        async function activateFreeTrial(plan) {
+            try {
+                const response = await fetch('/api/subscriptions/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ plan_name: plan.name })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✓ Free Trial activado exitosamente!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error al activar free trial');
+            }
+        }
+
+        function openPaymentModal(plan) {
+            selectedPlan = plan;
+            const durationText = plan.duration_days === 365 ? '1 año' : plan.duration_days === 30 ? '1 mes' : `${plan.duration_days} días`;
+            const savingsText = plan.discount ? `<br><span style="color: #4caf50; font-weight: 600;">💰 ${plan.discount} - ¡Ahorra dinero!</span>` : '';
+            
+            document.getElementById('planInfo').innerHTML = `
+                <strong style="font-size: 1.2em;">${plan.display_name}</strong><br>
+                <div style="margin: 15px 0; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                    <div style="font-size: 1.3em; color: #667eea; font-weight: 700;">$${plan.price.toFixed(2)} USD</div>
+                    <div style="color: #666; margin-top: 5px;">Duración: ${durationText}</div>
+                    ${plan.duration_days === 365 ? '<div style="color: #4caf50; font-size: 0.9em; margin-top: 5px;">≈ $' + (plan.price / 12).toFixed(2) + ' USD/mes</div>' : ''}
+                    ${savingsText}
+                </div>
+                <p style="color: #666; font-size: 0.9em;">
+                    ℹ️ Tu suscripción se activará inmediatamente después del pago exitoso.
+                </p>
+            `;
+            
+            renderPayPalButtons();
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            selectedPlan = null;
+        }
+
+        function renderPayPalButtons() {
+            // Limpiar contenedor
+            document.getElementById('paypal-button-container').innerHTML = '';
+            
+            // NOTA: Necesitas reemplazar YOUR_CLIENT_ID con tu Client ID real de PayPal
+            if (typeof paypal === 'undefined') {
+                document.getElementById('paypal-button-container').innerHTML = `
+                    <div class="alert alert-error">
+                        Error: PayPal SDK no cargado. Configura tu Client ID.
+                    </div>
+                `;
+                return;
+            }
+
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: selectedPlan.price.toFixed(2)
+                            },
+                            description: selectedPlan.display_name
+                        }]
+                    });
+                },
+                onApprove: async function(data, actions) {
+                    const order = await actions.order.capture();
+                    
+                    // Activar suscripción en el backend
+                    const response = await fetch('/api/subscriptions/subscribe', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            plan_name: selectedPlan.name,
+                            payment_id: order.id,
+                            payment_method: 'paypal'
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('✓ Pago procesado exitosamente! Suscripción activada.');
+                        closePaymentModal();
+                        location.reload();
+                    } else {
+                        alert('Error al activar suscripción: ' + result.error);
+                    }
+                },
+                onError: function(err) {
+                    alert('Error en el pago: ' + err);
+                }
+            }).render('#paypal-button-container');
+        }
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', loadData);
+
+        // Modo oscuro
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Cambiar idioma
+        function toggleLanguage() {
+            const currentLang = localStorage.getItem('language') || 'en';
+            const newLang = currentLang === 'es' ? 'en' : 'es';
+            localStorage.setItem('language', newLang);
+            alert('🌐 Idioma cambiado a: ' + (newLang === 'es' ? 'Español' : 'English'));
+        }
+
+        // Cerrar sesión
+        function logout() {
+            if (confirm('¿Estas seguro de que deseas cerrar sesión?')) {
+                localStorage.removeItem('session_token');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+    <script>
+        /* MENÚ UNIVERSAL JAVASCRIPT INLINE */
+        function toggleUniversalMenu() {
+            const menu = document.getElementById('universalMenu');
+            if (menu) {
+                menu.classList.toggle('active');
+            }
+        }
+        document.addEventListener('click', function(event) {
+            const menu = document.querySelector('.universal-menu');
+            const menuContent = document.getElementById('universalMenu');
+            if (menu && menuContent && !menu.contains(event.target)) {
+                menuContent.classList.remove('active');
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/auth/me')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.user && data.user.role === 'admin') {
+                        const adminLink = document.getElementById('adminMenuLink');
+                        if (adminLink) adminLink.style.display = 'block';
+                    }
+                })
+                .catch(err => console.error('Error verificando rol:', err));
+        });
+        /* FIN MENÚ UNIVERSAL */
+    </script>
+    <!-- Sistema de gestión de suscripciones -->
+    <script src="/static/js/subscription_manager.js"></script>

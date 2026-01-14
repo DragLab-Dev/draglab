@@ -1,0 +1,91 @@
+/* MENÚ UNIVERSAL - Estilos compartidos por todas las páginas */
+
+.universal-menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+.universal-menu .menu-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(102, 126, 234, 0.9);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.universal-menu .menu-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.universal-menu-content {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    background: white;
+    min-width: 250px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.universal-menu-content.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.universal-menu-content a,
+.universal-menu-content button {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.universal-menu-content a:hover,
+.universal-menu-content button:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.universal-menu-content .menu-divider {
+    height: 1px;
+    background: rgba(0,0,0,0.1);
+    margin: 5px 0;
+}
+
+/* Modo oscuro */
+body.dark-mode .universal-menu-content {
+    background: #1e1e2e;
+}
+
+body.dark-mode .universal-menu-content a,
+body.dark-mode .universal-menu-content button {
+    color: #fff;
+}
+
+body.dark-mode .universal-menu-content .menu-divider {
+    background: rgba(255,255,255,0.1);
+}

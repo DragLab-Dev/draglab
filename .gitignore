@@ -1,0 +1,121 @@
+# ==================================================
+# VISUAL STRATEGY CREATOR - GITIGNORE
+# ==================================================
+
+# ==================================================
+# ARCHIVOS DE CONFIGURACIÓN SENSIBLES
+# ==================================================
+.env
+*.env
+.env.local
+.env.production
+
+# ==================================================
+# BASE DE DATOS
+# ==================================================
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+*.db
+*.sqlite
+*.sqlite3
+
+# ==================================================
+# CACHE DE BACKTEST (datos históricos temporales)
+# ==================================================
+data/cache/
+data/cache/*.json
+
+# ==================================================
+# PYTHON
+# ==================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ==================================================
+# VIRTUAL ENVIRONMENTS
+# ==================================================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# ==================================================
+# DATOS Y LOGS
+# ==================================================
+data/*.csv
+data/*.json
+*.log
+logs/
+fallback_logs/
+old_logs/
+
+# ==================================================
+# ARCHIVOS TEMPORALES
+# ==================================================
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ==================================================
+# IDEs
+# ==================================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# ==================================================
+# TESTING
+# ==================================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ==================================================
+# DOCUMENTACIÓN GENERADA
+# ==================================================
+docs/_build/
+site/
+
+# ==================================================
+# OTROS
+# ==================================================
+*.zip
+*.tar.gz
+*.rar
+old/
+old_versions/
+backup/
+test_auth_flow.py

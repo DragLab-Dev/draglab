@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - DragLab</title>
+    <style>
+        /* MENÚ UNIVERSAL INLINE */
+        .universal-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        .universal-menu .menu-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.9);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .universal-menu .menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .universal-menu-content {
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background: white;
+            min-width: 250px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .universal-menu-content.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .universal-menu-content a,
+        .universal-menu-content button {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .universal-menu-content a:hover,
+        .universal-menu-content button:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .universal-menu-content .menu-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+            margin: 5px 0;
+        }
+        body.dark-mode .universal-menu-content {
+            background: #1e1e2e;
+        }
+        body.dark-mode .universal-menu-content a,
+        body.dark-mode .universal-menu-content button {
+            color: #fff;
+        }
+        body.dark-mode .universal-menu-content .menu-divider {
+            background: rgba(255,255,255,0.1);
+        }
+        /* FIN MENÚ UNIVERSAL */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.3s;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        body.dark-mode .card {
+            background: #1e1e2e;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+
+        body.dark-mode .card:hover {
+            box-shadow: 0 25px 50px rgba(102,126,234,0.3);
+        }
+
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.1);
+        }
+
+        .card h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        body.dark-mode .card h2 {
+            color: #ffffff;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        body.dark-mode .card p {
+            color: #cccccc;
+        }
+
+        .card ul {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .card li {
+            color: #555;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95em;
+        }
+
+        body.dark-mode .card li {
+            color: #bbbbbb;
+            border-bottom-color: #2a2a3e;
+        }
+
+        .card li:before {
+            content: '✓';
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .card li:last-child {
+            border-bottom: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        body.dark-mode .btn {
+            background: linear-gradient(135deg, #7b8ff0 0%, #9060c2 100%);
+        }
+        
+        /* Controles de Navegación */
+        .nav-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+        }
+        
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.95);
+            border: 2px solid rgba(255,255,255,0.3);
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,1);
+        }
+        
+        body.dark-mode .nav-btn {
+            background: rgba(30,30,46,0.95);
+            border-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        body.dark-mode .nav-btn:hover {
+            background: rgba(40,40,60,1);
+        }
+        
+        /* Menú Desplegable */
+        .nav-menu-wrapper {
+            position: relative;
+        }
+        
+        .menu-toggle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.95);
+            border: 2px solid rgba(255,255,255,0.3);
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .menu-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,1);
+        }
+        
+        body.dark-mode .menu-toggle {
+            background: rgba(30,30,46,0.95);
+            border-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background: white;
+            min-width: 200px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .dropdown-menu.active {
+            display: block;
+        }
+        
+        .dropdown-menu a,
+        .dropdown-menu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            text-decoration: none;
+            color: #333;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-menu a:hover,
+        .dropdown-menu button:hover {
+            background: #f5f5f5;
+        }
+        
+        .dropdown-menu .divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 5px 0;
+        }
+        
+        body.dark-mode .dropdown-menu {
+            background: #1e1e2e;
+        }
+        
+        body.dark-mode .dropdown-menu a,
+        body.dark-mode .dropdown-menu button {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .dropdown-menu a:hover,
+        body.dark-mode .dropdown-menu button:hover {
+            background: #2a2a3e;
+        }
+        
+        body.dark-mode .dropdown-menu .divider {
+            background: #3a3a4e;
+        }
+        
+        /* Botón de Retroceder */
+        .btn-back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.95);
+            border: 2px solid rgba(255,255,255,0.3);
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        .btn-back:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,1);
+        }
+        
+        body.dark-mode .btn-back {
+            background: rgba(30,30,46,0.95);
+            border-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        /* Badges de Dificultad y Riesgo */
+        .card-badges {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .badge-beginner {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .badge-intermediate {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            color: #333;
+        }
+        
+        .badge-advanced {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            color: white;
+        }
+        
+        .badge-expert {
+            background: linear-gradient(135deg, #434343 0%, #000000 100%);
+            color: white;
+        }
+        
+        .badge-risk-low {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+        
+        .badge-risk-medium {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            color: #333;
+        }
+        
+        .badge-risk-high {
+            background: linear-gradient(135deg, #c33764 0%, #1d2671 100%);
+            color: white;
+        }
+        
+        body.dark-mode .badge-intermediate,
+        body.dark-mode .badge-risk-medium {
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.9;
+            animation: fadeIn 1s ease-out 0.5s both;
+        }
+
+        .footer p {
+            font-size: 0.95em;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        body.dark-mode #activeBotsMasterPanel {
+            background: #1e1e2e;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        body.dark-mode #activeBotsMasterPanel h2 {
+            color: #8a9ef5;
+        }
+
+        body.dark-mode #activeBotsMasterPanel button {
+            color: white;
+        }
+
+        body.dark-mode #tabSignalBots,
+        body.dark-mode #tabAutoBots {
+            color: white;
+        }
+
+        body.dark-mode #signalBotsContainer > div,
+        body.dark-mode #autoBotsContainer > div {
+            color: #999;
+        }
+
+        body.dark-mode #signalBotsContainer small,
+        body.dark-mode #autoBotsContainer small {
+            color: #888;
+        }
+
+        /* Botón de actualizar en modo oscuro */
+        body.dark-mode #activeBotsMasterPanel button[onclick="loadActiveBots()"] {
+            background: linear-gradient(135deg, #7b8ff0 0%, #9060c2 100%);
+            box-shadow: 0 2px 10px rgba(123, 143, 240, 0.4);
+        }
+
+        /* Tabs en modo oscuro cuando no están activos */
+        body.dark-mode #tabSignalBots:not([style*="linear-gradient"]),
+        body.dark-mode #tabAutoBots:not([style*="linear-gradient"]) {
+            background: rgba(102,126,234,0.3) !important;
+            color: #8a9ef5 !important;
+        }
+
+        /* Estilos para la sección de bots activos */
+        #activeBotsMasterPanel {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            margin-top: 60px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        #activeBotsMasterPanel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        #activeBotsMasterPanel:hover::before {
+            transform: scaleX(1);
+        }
+
+        #activeBotsMasterPanel:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+
+        body.dark-mode #activeBotsMasterPanel:hover {
+            box-shadow: 0 25px 50px rgba(102,126,234,0.3);
+        }
+
+        .bots-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .bots-header h2 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2em;
+            margin: 0;
+            flex: 1;
+        }
+
+        .bots-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .card {
+                padding: 30px 20px;
+            }
+
+            #userPanel {
+                right: 20px;
+            }
+
+            .user-menu {
+                width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de Retroceder -->
+    <button class="btn-back" onclick="goBack()" title="Volver" style="display: none;" id="backButton">←</button>
+    
+    <!-- MENÚ UNIVERSAL -->
+    <div class="universal-menu">
+        <button class="menu-btn" onclick="toggleUniversalMenu()" title="Menú">☰</button>
+        <div class="universal-menu-content" id="universalMenu">
+            <a href="/">🏠 Inicio</a>
+            <a href="/backtest">🧱 Visual Strategy Builder</a>
+            <a href="/trading-bot">🤖 Trading Bot</a>
+            <div class="menu-divider"></div>
+            <a href="/user-panel">👤 Mi Cuenta</a>
+            <a href="/subscriptions">💎 Suscripciones</a>
+            <a href="/admin/panel" id="adminMenuLink" style="display: none;">🔒 Panel Admin</a>
+            <div class="menu-divider"></div>
+            <button onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
+            <button onclick="toggleLanguage()"><span id="lang-text">🌐 Idioma</span></button>
+            <div class="menu-divider"></div>
+            <button onclick="logout()">🚪 Cerrar Sesión</button>
+        </div>
+    </div>
+
+        <div class="container">
+        <div class="header">
+            <h1 id="main-title">🚀 DragLab</h1>
+            <p id="main-subtitle">Visual strategy builder, backtesting & automated trading</p>
+        </div>
+
+    <div class="container">
+        <div class="cards-container">
+            <!-- Visual Strategy Builder Card -->
+            <div class="card">
+                <span class="card-icon">📊</span>
+                <h2 id="backtest-title">DragLab - Visual Strategy Builder</h2>
+                <div class="card-badges">
+                    <span class="badge badge-beginner">🌱 Principiante</span>
+                    <span class="badge badge-intermediate">🛡️ Intermedio</span>
+                    <span class="badge badge-risk-low">⚠️ Riesgo Bajo</span>
+                </div>
+                <p id="backtest-subtitle">Crea estrategias mediante bloques - Sin programar - Con backtest integrado</p>
+                <ul>
+                    <li id="backtest-feature-1">🧱 Constructor de bloques drag & drop (SIN CÓDIGO)</li>
+                    <li id="backtest-feature-2">📈 Backtest con datos históricos de Binance</li>
+                    <li id="backtest-feature-3">🔧 Bloques de indicadores técnicos pre-configurados</li>
+                    <li id="backtest-feature-4">📊 Análisis de rendimiento detallado</li>
+                    <li id="backtest-feature-5">📉 Gráficos interactivos profesionales</li>
+                    <li id="backtest-feature-6">💾 Exportar/Importar estrategias en JSON</li>
+                </ul>
+                <button class="btn" onclick="goToBacktest()" id="backtest-btn">Crear Estrategia Visual</button>
+            </div>
+
+            <!-- Trading Bot Card -->
+            <div class="card">
+                <span class="card-icon">🤖</span>
+                <h2 id="bot-title">DragLab - Bots de Trading</h2>
+                <div class="card-badges">
+                    <span class="badge badge-intermediate">🛡️ Intermedio</span>
+                    <span class="badge badge-advanced">🔥 Avanzado</span>
+                    <span class="badge badge-expert">🏆 Experto</span>
+                    <span class="badge badge-risk-high">⚠️ Riesgo Alto</span>
+                </div>
+                <p id="bot-subtitle">Convierte tus estrategias visuales en bots automatizados de trading</p>
+                <ul>
+                    <li id="bot-feature-1">🔔 Bot de señales en tiempo real (solo notifica)</li>
+                    <li id="bot-feature-2">🤖 Bot automático 24/7 (ejecuta trades)</li>
+                    <li id="bot-feature-3">🧱 Usa tus estrategias creadas con bloques</li>
+                    <li id="bot-feature-4">⚠️ Gestión de riesgo avanzada</li>
+                    <li id="bot-feature-5">📲 Notificaciones y alertas configurables</li>
+                    <li id="bot-feature-6">📊 Monitoreo de posiciones en tiempo real</li>
+                </ul>
+                <button class="btn" onclick="goToTradingBot()" id="bot-btn">Crear Bot de Trading</button>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE GESTIÓN DE BOTS ACTIVOS -->
+        <div id="activeBotsMasterPanel">
+            <div class="bots-header">
+                <h2>
+                    🤖 <span id="active-bots-title">Gestión de Bots Activos</span>
+                </h2>
+                <button onclick="loadActiveBots()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold; box-shadow: 0 2px 10px rgba(102,126,234,0.3); transition: all 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    🔄 <span id="refresh-btn-text">Actualizar</span>
+                </button>
+            </div>
+            
+            <!-- Tabs para Signal y Auto Bots -->
+            <div class="bots-tabs">
+                <button id="tabSignalBots" onclick="switchTab('signal')" style="padding: 12px 30px; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 25px; cursor: pointer; font-size: 1em; font-weight: bold; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4);">
+                    📡 <span id="tab-signal-text">Bots de Señales</span> <span id="signalBotsCount" style="background: rgba(255,255,255,0.3); padding: 2px 10px; border-radius: 12px; margin-left: 8px;">0</span>
+                </button>
+                <button id="tabAutoBots" onclick="switchTab('auto')" style="padding: 12px 30px; border: none; background: rgba(102,126,234,0.2); color: #667eea; border-radius: 25px; cursor: pointer; font-size: 1em; font-weight: bold; transition: all 0.3s;">
+                    ⚙️ <span id="tab-auto-text">Bots Automáticos</span> <span id="autoBotsCount" style="background: rgba(102,126,234,0.2); padding: 2px 10px; border-radius: 12px; margin-left: 8px;">0</span>
+                </button>
+            </div>
+
+            <!-- Contenedor de Signal Bots -->
+            <div id="signalBotsContainer" style="display: block;">
+                <div style="text-align: center; padding: 40px; color: #999;">
+                    <p style="font-size: 1.2em; margin: 0;">📭 <span id="no-signal-bots-text">No hay bots de señales activos</span></p>
+                    <small id="create-signal-hint">Ve a "Trading Bot → Signal Bot" para crear uno</small>
+                </div>
+            </div>
+
+            <!-- Contenedor de Auto Bots -->
+            <div id="autoBotsContainer" style="display: none;">
+                <div style="text-align: center; padding: 40px; color: #999;">
+                    <p style="font-size: 1.2em; margin: 0;">📭 <span id="no-auto-bots-text">No hay bots automáticos activos</span></p>
+                    <small id="create-auto-hint">Ve a "Trading Bot → Auto Bot" para crear uno</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p id="footer-text">💡 Creado por camiloeagiraldodev@gmail.com | Versión 3.0 | 2026</p>
+        </div>
+    </div>
+
+    <script>
+        // Traducciones
+        const translations = {
+            es: {
+                'main-title': '🚀 DragLab',
+                'main-subtitle': 'Crea estrategias y bots mediante bloques visuales - Sin Programar',
+                'backtest-title': 'Visual Strategy Builder',
+                'backtest-subtitle': 'Crea estrategias mediante bloques - Sin programar - Con backtest integrado',
+                'backtest-feature-1': '🧩 Constructor de bloques drag & drop (SIN CÓDIGO)',
+                'backtest-feature-2': '📈 Backtest con datos históricos de Binance',
+                'backtest-feature-3': '🔧 Bloques de indicadores técnicos pre-configurados',
+                'backtest-feature-4': '📊 Análisis de rendimiento detallado',
+                'backtest-feature-5': '📉 Gráficos interactivos profesionales',
+                'backtest-feature-6': '💾 Exportar/Importar estrategias en JSON',
+                'backtest-btn': 'Crear Estrategia Visual',
+                'bot-title': 'Bots de Trading',
+                'bot-subtitle': 'Convierte tus estrategias visuales en bots automatizados de trading',
+                'bot-feature-1': '🔔 Bot de señales en tiempo real (solo notifica)',
+                'bot-feature-2': '🤖 Bot automático 24/7 (ejecuta trades)',
+                'bot-feature-3': '🧩 Usa tus estrategias creadas con bloques',
+                'bot-feature-4': '⚠️ Gestión de riesgo avanzada',
+                'bot-feature-5': '📲 Notificaciones y alertas configurables',
+                'bot-feature-6': '📊 Monitoreo de posiciones en tiempo real',
+                'bot-btn': 'Crear Bot de Trading',
+                'active-bots-title': 'Gestión de Bots Activos',
+                'refresh-btn-text': 'Actualizar',
+                'tab-signal-text': 'Bots de Señales',
+                'tab-auto-text': 'Bots Automáticos',
+                'no-signal-bots-text': 'No hay bots de señales activos',
+                'create-signal-hint': 'Ve a "Trading Bot → Signal Bot" para crear uno',
+                'no-auto-bots-text': 'No hay bots automáticos activos',
+                'create-auto-hint': 'Ve a "Trading Bot → Auto Bot" para crear uno',
+                'footer-text': '💡 Creado por camiloeagiraldodev@gmail.com | Versión 3.0 | 2026',
+                'lang-btn': '🇬🇧 EN'
+            },
+            en: {
+                'main-title': '🚀 DragLab',
+                'main-subtitle': 'Visual strategy builder, backtesting & automated trading',
+                'backtest-title': 'Visual Strategy Builder',
+                'backtest-subtitle': 'Build strategies with blocks - No coding - Integrated backtest',
+                'backtest-feature-1': '🧩 Drag & drop block builder (NO CODE)',
+                'backtest-feature-2': '📈 Backtest with Binance historical data',
+                'backtest-feature-3': '🔧 Pre-configured technical indicator blocks',
+                'backtest-feature-4': '📊 Detailed performance analysis',
+                'backtest-feature-5': '📉 Professional interactive charts',
+                'backtest-feature-6': '💾 Export/Import strategies in JSON',
+                'backtest-btn': 'Create Visual Strategy',
+                'bot-title': 'Trading Bots',
+                'bot-subtitle': 'Convert your visual strategies into automated trading bots',
+                'bot-feature-1': '🔔 Real-time signal bot (notifications only)',
+                'bot-feature-2': '🤖 Automated bot 24/7 (executes trades)',
+                'bot-feature-3': '🧩 Uses your block-created strategies',
+                'bot-feature-4': '⚠️ Advanced risk management',
+                'bot-feature-5': '📲 Configurable notifications and alerts',
+                'bot-feature-6': '📊 Real-time position monitoring',
+                'bot-btn': 'Create Trading Bot',
+                'active-bots-title': 'Active Bots Management',
+                'refresh-btn-text': 'Refresh',
+                'tab-signal-text': 'Signal Bots',
+                'tab-auto-text': 'Auto Bots',
+                'no-signal-bots-text': 'No active signal bots',
+                'create-signal-hint': 'Go to "Trading Bot → Signal Bot" to create one',
+                'no-auto-bots-text': 'No active auto bots',
+                'create-auto-hint': 'Go to "Trading Bot → Auto Bot" to create one',
+                'footer-text': '💡 Created by camiloeagiraldodev@gmail.com | Version 3.0 | 2026',
+                'lang-btn': '🇪🇸 ES'
+            }
+        };
+
+        // Inicializar idioma y tema
+        let currentLang = localStorage.getItem('language') || 'en';
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+
+        function applyLanguage(updateHeader = false) {
+            const trans = translations[currentLang];
+            Object.keys(trans).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    // Nunca actualizar el header en el primer render
+                    if ((key === 'main-title' || key === 'main-subtitle') && !updateHeader) return;
+                    // Solo actualizar el header si updateHeader es true (cambio de idioma)
+                    if ((key === 'main-title' || key === 'main-subtitle') && updateHeader) {
+                        element.textContent = trans[key];
+                    } else if (key !== 'main-title' && key !== 'main-subtitle') {
+                        element.textContent = trans[key];
+                    }
+                }
+            });
+            // Traducir los badges manualmente
+            const badgeMap = [
+                { id: 'badge-beginner', key: 'badge-beginner' },
+                { id: 'badge-intermediate', key: 'badge-intermediate' },
+                { id: 'badge-advanced', key: 'badge-advanced' },
+                { id: 'badge-expert', key: 'badge-expert' },
+                { id: 'badge-risk-low', key: 'badge-risk-low' },
+                { id: 'badge-risk-medium', key: 'badge-risk-medium' },
+                { id: 'badge-risk-high', key: 'badge-risk-high' }
+            ];
+            badgeMap.forEach(badge => {
+                const els = document.getElementsByClassName(badge.id);
+                for (let i = 0; i < els.length; i++) {
+                    els[i].textContent = trans[badge.key];
+                }
+            });
+            // Actualizar el texto del botón de idioma
+            const langBtn = document.getElementById('lang-text');
+            if (langBtn) langBtn.textContent = trans['lang-btn'];
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            localStorage.setItem('language', currentLang);
+            // Aquí sí actualizamos el header
+            applyLanguage(true);
+            // Recargar los bots para actualizar el idioma en las tarjetas
+            loadActiveBots();
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        function goToBacktest() {
+            window.location.href = '/backtest';
+        }
+
+        function goToTradingBot() {
+            window.location.href = '/trading-bot';
+        }
+        
+        // ...existing code...
+        function updateBackButton() {
+            const backButton = document.getElementById('backButton');
+            const isMainPage = window.location.pathname === '/' || window.location.pathname === '/index.html';
+            if (backButton && !isMainPage) {
+                backButton.style.display = 'flex';
+            }
+        }
+
+        // Verificar si el usuario es admin
+        function checkAdminStatus() {
+            fetch('/api/auth/me')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.user && data.user.role === 'admin') {
+                        const adminLink = document.getElementById('adminMenuLink');
+                        if (adminLink) adminLink.style.display = 'block';
+                    }
+                })
+                .catch(err => console.error('Error verificando rol:', err));
+        }
+
+        // Aplicar configuraciones guardadas al cargar
+        // Forzar idioma y modo oscuro ANTES de que el DOM esté listo
+        (function immediateLangAndTheme() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            // No cambiar el texto del header en el primer render
+        })();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // No actualizar el header en el primer render
+            applyLanguage(false);
+            updateBackButton();
+            checkAdminStatus();
+            loadActiveBots();
+            
+            // Auto-refresh de bots cada 10 segundos
+            setInterval(() => {
+                loadActiveBots();
+            }, 10000);
+        });
+
+        // ==================== GESTIÓN DE BOTS ACTIVOS ====================
+        
+        let currentBotTab = 'signal';
+        
+        function switchTab(tab) {
+            currentBotTab = tab;
+            
+            const signalTab = document.getElementById('tabSignalBots');
+            const autoTab = document.getElementById('tabAutoBots');
+            const signalContainer = document.getElementById('signalBotsContainer');
+            const autoContainer = document.getElementById('autoBotsContainer');
+            
+            if (tab === 'signal') {
+                signalTab.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                signalTab.style.color = 'white';
+                signalTab.style.boxShadow = '0 4px 15px rgba(102,126,234,0.4)';
+                autoTab.style.background = 'rgba(102,126,234,0.2)';
+                autoTab.style.color = '#667eea';
+                autoTab.style.boxShadow = 'none';
+                
+                signalContainer.style.display = 'block';
+                autoContainer.style.display = 'none';
+            } else {
+                autoTab.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                autoTab.style.color = 'white';
+                autoTab.style.boxShadow = '0 4px 15px rgba(102,126,234,0.4)';
+                signalTab.style.background = 'rgba(102,126,234,0.2)';
+                signalTab.style.color = '#667eea';
+                signalTab.style.boxShadow = 'none';
+                
+                signalContainer.style.display = 'none';
+                autoContainer.style.display = 'block';
+            }
+        }
+        
+        function loadActiveBots() {
+            // Los signal bots se guardan en 'userBots' desde signal_bot.html
+            const userBots = JSON.parse(localStorage.getItem('userBots') || '[]');
+            console.log('📦 Todos los bots en localStorage:', userBots);
+            
+            // Filtrar bots activos - mostrar todos excepto los explícitamente detenidos
+            const activeSignalBots = userBots.filter(bot => {
+                // Mostrar el bot si no tiene status o si el status es diferente de 'stopped' o 'paused'
+                const isActive = !bot.status || (bot.status !== 'stopped' && bot.status !== 'paused');
+                console.log(`Bot ${bot.name || bot.id}: status="${bot.status}", isActive=${isActive}`);
+                return isActive;
+            });
+            
+            // Los auto bots se guardan en 'autoBots' desde auto_bot.html
+            const autoBots = JSON.parse(localStorage.getItem('autoBots') || '[]');
+            const activeAutoBots = autoBots.filter(bot => !bot.status || (bot.status !== 'stopped' && bot.status !== 'paused'));
+            
+            console.log('✅ Bots activos encontrados:', activeSignalBots.length);
+            
+            // Actualizar contadores
+            document.getElementById('signalBotsCount').textContent = activeSignalBots.length;
+            document.getElementById('autoBotsCount').textContent = activeAutoBots.length;
+            
+            // Renderizar Signal Bots
+            renderSignalBots(activeSignalBots);
+            
+            // Renderizar Auto Bots
+            renderAutoBots(activeAutoBots);
+        }
+        
+        function renderSignalBots(bots) {
+            const container = document.getElementById('signalBotsContainer');
+            const lang = localStorage.getItem('language') || 'en';
+            
+            if (bots.length === 0) {
+                const noBotsText = lang === 'es' ? 'No hay bots de señales activos' : 'No active signal bots';
+                const hintText = lang === 'es' ? 'Ve a "Trading Bot → Signal Bot" para crear uno' : 'Go to "Trading Bot → Signal Bot" to create one';
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <p style="font-size: 1.2em; margin: 0;">📭 ${noBotsText}</p>
+                        <small>${hintText}</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = bots.map((bot, index) => {
+                // Formatear el símbolo para mostrar
+                const displaySymbol = bot.symbol || 'N/A';
+                const timeframe = bot.timeframe || '15m';
+                
+                // Determinar el emoji del símbolo
+                let symbolEmoji = '💰';
+                if (displaySymbol.includes('BTC')) symbolEmoji = '₿';
+                else if (displaySymbol.includes('ETH')) symbolEmoji = 'Ξ';
+                else if (displaySymbol.includes('SOL')) symbolEmoji = '☀️';
+                else if (displaySymbol.includes('DOGE')) symbolEmoji = '🐕';
+                
+                // Calcular tiempo activo
+                const uptimeSeconds = bot.uptime || 0;
+                const uptimeDisplay = formatUptime(uptimeSeconds);
+                
+                // Formatear fecha de creación
+                const createdDate = bot.created_at ? new Date(bot.created_at).toLocaleString(lang) : 'N/A';
+                
+                // Estado del bot
+                const statusText = lang === 'es' ? '🟢 ACTIVO' : '🟢 ACTIVE';
+                const stopText = lang === 'es' ? '⏹️ Detener' : '⏹️ Stop';
+                
+                return `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; margin-bottom: 15px; color: white; box-shadow: 0 4px 15px rgba(102,126,234,0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                <span style="font-size: 1.5em;">${symbolEmoji}</span>
+                                <strong style="font-size: 1.2em;">${bot.name || displaySymbol}</strong>
+                                <span style="background: #4caf50; padding: 3px 12px; border-radius: 15px; font-size: 0.85em; animation: pulse 2s infinite;">
+                                    ${statusText}
+                                </span>
+                            </div>
+                            <div style="font-size: 0.9em; opacity: 0.95; line-height: 1.6;">
+                                <div style="margin-bottom: 5px;">📊 <strong>${displaySymbol}</strong> | ⏱️ ${timeframe} | ⏰ ${uptimeDisplay}</div>
+                                ${bot.chat_id ? `<div style="margin-bottom: 5px;">💬 Chat ID: <code style="background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px;">${bot.chat_id}</code></div>` : ''}
+                                <div style="font-size: 0.85em; opacity: 0.8;">📅 Creado: ${createdDate}</div>
+                            </div>
+                        </div>
+                        <button onclick="stopSignalBot('${bot.id}')" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.95em; font-weight: bold; transition: all 0.3s; box-shadow: 0 2px 10px rgba(220,53,69,0.4);" 
+                                onmouseover="this.style.background='#c82333'; this.style.transform='scale(1.05)'" 
+                                onmouseout="this.style.background='#dc3545'; this.style.transform='scale(1)'">
+                            ${stopText}
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        
+        function formatUptime(seconds) {
+            if (!seconds || seconds < 60) return `${seconds || 0}s`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
+            return `${Math.floor(seconds / 86400)}d`;
+        }
+        
+        function renderAutoBots(bots) {
+            const container = document.getElementById('autoBotsContainer');
+            
+            if (bots.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <p style="font-size: 1.2em; margin: 0;">📭 <span id="no-auto-bots-text">No hay bots automáticos activos</span></p>
+                        <small id="create-auto-hint">Ve a "Trading Bot → Auto Bot" para crear uno</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = bots.map((bot, index) => {
+                // Determine badge classes
+                let levelClass = 'badge-intermediate';
+                let riskClass = 'badge-risk-medium';
+                if (bot.level === 'beginner') levelClass = 'badge-beginner';
+                if (bot.level === 'advanced') levelClass = 'badge-advanced';
+                if (bot.level === 'expert') levelClass = 'badge-expert';
+                if (bot.risk === 'low') riskClass = 'badge-risk-low';
+                if (bot.risk === 'high') riskClass = 'badge-risk-high';
+                // Badge text
+                const badgeText = {
+                    'badge-beginner': currentLang === 'es' ? '🌱 Principiante' : '🌱 Beginner',
+                    'badge-intermediate': currentLang === 'es' ? '🛡️ Intermedio' : '🛡️ Intermediate',
+                    'badge-advanced': currentLang === 'es' ? '🔥 Avanzado' : '🔥 Advanced',
+                    'badge-expert': currentLang === 'es' ? '🏆 Experto' : '🏆 Expert',
+                    'badge-risk-low': currentLang === 'es' ? '⚠️ Riesgo Bajo' : '⚠️ Low Risk',
+                    'badge-risk-medium': currentLang === 'es' ? '⚠️ Riesgo Medio' : '⚠️ Medium Risk',
+                    'badge-risk-high': currentLang === 'es' ? '⚠️ Riesgo Alto' : '⚠️ High Risk'
+                };
+                return `
+                <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); padding: 20px; border-radius: 12px; margin-bottom: 15px; color: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                <span style="font-size: 1.5em;">⚙️</span>
+                                <strong style="font-size: 1.2em;">${bot.symbol} - ${bot.timeframe}</strong>
+                                <span style="background: #4caf50; padding: 3px 12px; border-radius: 15px; font-size: 0.85em; animation: pulse 2s infinite;">
+                                    🟢 TRADING
+                                </span>
+                            </div>
+                            <div class="card-badges" style="margin-bottom: 10px;">
+                                <span class="badge ${levelClass}">${badgeText[levelClass]}</span>
+                                <span class="badge ${riskClass}">${badgeText[riskClass]}</span>
+                            </div>
+                            <div style="font-size: 0.9em; opacity: 0.95; line-height: 1.6;">
+                                <div>📊 Estrategia: ${bot.totalBlocks || 0} bloques | ⏰ ${new Date(bot.createdAt).toLocaleString(currentLang)}</div>
+                                ${bot.bot_id ? `<div style="margin-top: 5px;">🆔 Bot ID: <code style="background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px;">${bot.bot_id}</code></div>` : ''}
+                            </div>
+                        </div>
+                        <button onclick="stopAutoBot(${index})" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.95em; font-weight: bold; transition: all 0.3s; box-shadow: 0 2px 10px rgba(220,53,69,0.4);" 
+                                onmouseover="this.style.background='#c82333'; this.style.transform='scale(1.05)'" 
+                                onmouseout="this.style.background='#dc3545'; this.style.transform='scale(1)'">
+                            ⏹️ Detener
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        
+        function stopSignalBot(botId) {
+            const lang = localStorage.getItem('language') || 'en';
+            let userBots = JSON.parse(localStorage.getItem('userBots') || '[]');
+            const botIndex = userBots.findIndex(b => b.id === botId);
+            
+            if (botIndex === -1) {
+                alert(lang === 'es' ? '❌ Bot no encontrado' : '❌ Bot not found');
+                return;
+            }
+            
+            const bot = userBots[botIndex];
+            const confirmText = lang === 'es' ? 
+                `¿Detener el bot de señales "${bot.name || bot.symbol}"?` : 
+                `Stop signal bot "${bot.name || bot.symbol}"?`;
+            
+            if (confirm(confirmText)) {
+                // Cambiar estado a pausado en lugar de eliminarlo
+                bot.status = 'stopped';
+                userBots[botIndex] = bot;
+                
+                // Intentar detener en el servidor si existe la conexión
+                if (bot.server_connected && bot.id) {
+                    fetch(`/api/signal-bot/pause/${bot.id}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log('Bot detenido en servidor:', data))
+                    .catch(error => console.error('Error deteniendo bot:', error));
+                }
+                
+                // Guardar en localStorage
+                localStorage.setItem('userBots', JSON.stringify(userBots));
+                
+                // Recargar la lista
+                loadActiveBots();
+                
+                const successText = lang === 'es' ? 
+                    `✅ Bot detenido: ${bot.name || bot.symbol}` : 
+                    `✅ Bot stopped: ${bot.name || bot.symbol}`;
+                alert(successText);
+            }
+        }
+        
+        function stopAutoBot(index) {
+            const lang = localStorage.getItem('language') || 'en';
+            let autoBots = JSON.parse(localStorage.getItem('autoBots') || '[]');
+            const bot = autoBots[index];
+            
+            if (confirm(lang === 'es' ? 
+                `¿Detener el bot automático para ${bot.symbol}?` : 
+                `Stop auto bot for ${bot.symbol}?`)) {
+                
+                // Llamar al backend si tiene bot_id
+                if (bot.bot_id) {
+                    fetch(`/api/auto-bot/stop/${bot.bot_id}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log('Bot detenido:', data))
+                    .catch(error => console.error('Error:', error));
+                }
+                
+                autoBots.splice(index, 1);
+                localStorage.setItem('autoBots', JSON.stringify(autoBots));
+                loadActiveBots();
+                
+                alert(lang === 'es' ? `✅ Bot detenido: ${bot.symbol}` : `✅ Bot stopped: ${bot.symbol}`);
+            }
+        }
+
+        // Cerrar sesión (usada por el menú universal)
+        function logout() {
+            if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
+                // Limpiar localStorage y redirigir
+                localStorage.removeItem('session_token');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+
+    <script>
+        /* MENÚ UNIVERSAL JAVASCRIPT INLINE */
+        function toggleUniversalMenu() {
+            const menu = document.getElementById('universalMenu');
+            if (menu) {
+                menu.classList.toggle('active');
+            }
+        }
+        document.addEventListener('click', function(event) {
+            const menu = document.querySelector('.universal-menu');
+            const menuContent = document.getElementById('universalMenu');
+            if (menu && menuContent && !menu.contains(event.target)) {
+                menuContent.classList.remove('active');
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/auth/me')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.user && data.user.role === 'admin') {
+                        const adminLink = document.getElementById('adminMenuLink');
+                        if (adminLink) adminLink.style.display = 'block';
+                    }
+                })
+                .catch(err => console.error('Error verificando rol:', err));
+        });
+        /* FIN MENÚ UNIVERSAL */
+    </script>
+    <!-- Sistema de gestión de suscripciones -->
+    <script src="/static/js/subscription_manager.js"></script>
